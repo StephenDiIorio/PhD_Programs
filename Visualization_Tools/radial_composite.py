@@ -435,17 +435,12 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     if verbose > 0:
         print('Found {} files to plot'.format(len(file_list)))
 
-    rtest = np.array([])
-    ttest = np.array([])
     data = []
     for f in file_list:
         d = sdf.read(f, mmap=0)
         avg, r, t = electric_radial_average(d)
-        if not np.array_equal(r,rtest) or not np.array_equal(t, ttest):
-            print("ERROR: GETTING DIFFERENT RADIAL AND THETA VECTORS")
-        rtest = np.copy(r)
-        ttest = np.copy(t)
         data.append(avg)
+    var = d.__dict__[varname]  # for units later
     data = np.asarray(data)
     data = data.T
 
@@ -461,11 +456,15 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
     if vmin is None and vmax is None:
-        vmin, vmax = get_var_range(file_list, varname)
+        vmin = np.min(data)
+        vmax = np.max(data)
+        # vmin, vmax = get_var_range(file_list, varname)
     elif vmin is None:
-        vmin = get_var_range(file_list, varname)[0]
+        vmin = np.min(data)
+        # vmin = get_var_range(file_list, varname)[0]
     elif vmax is None:
-        vmax = get_var_range(file_list, varname)[1]
+        vmax = np.max(data)
+        # vmax = get_var_range(file_list, varname)[1]
     mult, sym = get_si_prefix(vmax - vmin)
 
     fig, ax = plt.subplots()
