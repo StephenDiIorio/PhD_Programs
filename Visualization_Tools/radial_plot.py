@@ -162,8 +162,8 @@ def polar2cart(r, theta):
 
 
 def main():
-    path = "/Users/stephendiiorio/Desktop/"
-    fnums = ["restart0010"]
+    path = "/scratch/lsa_flux/diiorios/2d_big/"
+    fnums = ["0200"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
