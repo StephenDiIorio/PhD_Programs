@@ -1,10 +1,8 @@
-from matplotlib import use
-use('Agg')
-import sdf_helper as sh
+import sdf
 import scipy.constants as sc
 import numpy as np
-# from matplotlib import use
-# use('Agg')
+from matplotlib import use
+use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 plt.ion()
@@ -164,20 +162,20 @@ def polar2cart(r, theta):
 
 
 def main():
-    path = "/scratch/lsa_flux/diiorios/2d_big/"
-    fnums = ["0200"]
+    path = "/Users/stephendiiorio/Desktop/"
+    fnums = ["restart0010"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
 
     for i in range(len(fname)):
-        sdfdata = sh.getdata(fname[i])
+        sdfdata = sdf.read(fname[i], mmap=0)
 
-        ex = sdfdata.Electric_Field_Ex.data
-        ey = sdfdata.Electric_Field_Ey.data
+        ex = sdfdata.__dict__['Electric_Field_Ex'].data
+        ey = sdfdata.__dict__['Electric_Field_Ey'].data
 
-        x_grid = sdfdata.Electric_Field_Ex.grid_mid.data[0]
-        y_grid = sdfdata.Electric_Field_Ex.grid_mid.data[1]
+        x_grid = sdfdata.__dict__['Electric_Field_Ex'].grid_mid.data[0]
+        y_grid = sdfdata.__dict__['Electric_Field_Ex'].grid_mid.data[1]
 
         # See https://www.mathworks.com/matlabcentral/answers/95758-how-can-i-convert-vector-fields-from-cartesian-to-polar-coordinate-system-in-matlab-7-10-r2010a for a discussion on how to create a radial vector field from a cartesian one.
         X, Y = np.meshgrid(x_grid, y_grid)
