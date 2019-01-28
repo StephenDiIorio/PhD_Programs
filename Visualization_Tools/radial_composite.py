@@ -317,7 +317,7 @@ def electric_radial_average(sdf_data):
     ey = sdf_data.__dict__['Electric_Field_Ey']
 
     x_grid = ex.grid_mid.data[0]
-    y_grid = ey.grid_mid.data[1]
+    y_grid = ex.grid_mid.data[1]
     ex = ex.data
     ey = ey.data
 
