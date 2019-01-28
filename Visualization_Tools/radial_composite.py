@@ -448,9 +448,10 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     tmax = sdf.read(file_list[-1], mmap=0).Header['time']
     rmin = np.min(r)
     rmax = np.max(r)
+    print(rmin, rmax)
 
     shape = data.shape
-    extent = [tmin, tmax, rmax, rmin]
+    extent = [tmin, tmax, rmin, rmax]
 
     rmult, rsym = get_si_prefix(rmax - rmin)  # y axis
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
