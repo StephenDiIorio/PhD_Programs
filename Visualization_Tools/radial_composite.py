@@ -8,6 +8,9 @@ import matplotlib.cm as cm
 from matplotlib.ticker import FuncFormatter
 # plt.ion()
 
+from scipy.ndimage import map_coordinates
+from scipy.ndimage.interpolation import shift
+from scipy.optimize import curve_fit, minimize
 
 plt.rc('font', size=20)          # controls default text sizes
 plt.rc('axes', titlesize=18)     # fontsize of the axes title
@@ -15,6 +18,155 @@ plt.rc('axes', labelsize=15)     # fontsize of the x and y labels
 plt.rc('xtick', labelsize=12)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=12)    # fontsize of the tick labels
 plt.rc('legend', fontsize=16)    # legend fontsize
+
+
+def reproject_image_into_polar(data, origin=None, Jacobian=False, dr=1, dt=None):
+    """
+    Reprojects a 2D numpy array (``data``) into a polar coordinate system.
+    "origin" is a tuple of (x0, y0) relative to the bottom-left image corner,
+    and defaults to the center of the image.
+    Parameters
+    ----------
+    data : 2D np.array
+    origin : tuple
+        The coordinate of the image center, relative to bottom-left
+    Jacobian : boolean
+        Include ``r`` intensity scaling in the coordinate transform.
+        This should be included to account for the changing pixel size that
+        occurs during the transform.
+    dr : float
+        Radial coordinate spacing for the grid interpolation
+        tests show that there is not much point in going below 0.5
+    dt : float
+        Angular coordinate spacing (in radians)
+        if ``dt=None``, dt will be set such that the number of theta values
+        is equal to the maximum value between the height or the width of
+        the image.
+    Returns
+    -------
+    output : 2D np.array
+        The polar image (r, theta)
+    r_grid : 2D np.array
+        meshgrid of radial coordinates
+    theta_grid : 2D np.array
+        meshgrid of theta coordinates
+
+    Notes
+    -----
+    Adapted from:
+    http://stackoverflow.com/questions/3798333/image-information-along-a-polar-coordinate-system
+    """
+
+    # bottom-left coordinate system requires numpy image to be np.flipud
+    data = np.flipud(data)
+
+    ny, nx = data.shape[:2]
+    if origin is None:
+        origin = (nx//2, ny//2)
+
+    # Determine that the min and max r and theta coords will be...
+    x, y = index_coords(data, origin=origin)  # (x,y) coordinates of each pixel
+    r, theta = cart2polar(x, y)  # convert (x,y) -> (r,θ), note θ=0 is vertical
+
+    nr = np.int(np.ceil((r.max()-r.min())/dr))
+
+    if dt is None:
+        nt = max(nx, ny)
+    else:
+        # dt in radians
+        nt = np.int(np.ceil((theta.max()-theta.min())/dt))
+
+    # Make a regular (in polar space) grid based on the min and max r & theta
+    r_i = np.linspace(r.min(), r.max(), nr, endpoint=False)
+    theta_i = np.linspace(theta.min(), theta.max(), nt, endpoint=False)
+    theta_grid, r_grid = np.meshgrid(theta_i, r_i)
+
+    # Project the r and theta grid back into pixel coordinates
+    X, Y = polar2cart(r_grid, theta_grid)
+
+    X += origin[0]  # We need to shift the origin
+    Y += origin[1]  # back to the bottom-left corner...
+    xi, yi = X.flatten(), Y.flatten()
+    coords = np.vstack((yi, xi))  # (map_coordinates requires a 2xn array)
+
+    zi = map_coordinates(data, coords)
+    output = zi.reshape((nr, nt))
+
+    if Jacobian:
+        output = output*r_i[:, np.newaxis]
+
+    return output, r_grid, theta_grid
+
+
+def index_coords(data, origin=None):
+    """
+    Creates x & y coords for the indicies in a numpy array
+
+    Parameters
+    ----------
+    data : numpy array
+        2D data
+    origin : (x,y) tuple
+        defaults to the center of the image. Specify origin=(0,0)
+        to set the origin to the *bottom-left* corner of the image.
+
+    Returns
+    -------
+        x, y : arrays
+    """
+
+    ny, nx = data.shape[:2]
+    if origin is None:
+        origin_x, origin_y = nx//2, ny//2
+    else:
+        origin_x, origin_y = origin
+
+    x, y = np.meshgrid(np.arange(float(nx)), np.arange(float(ny)))
+
+    x -= origin_x
+    y -= origin_y
+    return x, y
+
+
+def cart2polar(x, y):
+    """
+    Transform Cartesian coordinates to polar
+
+    Parameters
+    ----------
+    x, y : floats or arrays
+        Cartesian coordinates
+
+    Returns
+    -------
+    r, theta : floats or arrays
+        Polar coordinates
+
+    """
+
+    r = np.sqrt(x**2 + y**2)
+    theta = np.arctan2(x, y)  # θ referenced to vertical
+    return r, theta
+
+
+def polar2cart(r, theta):
+    """
+    Transform polar coordinates to Cartesian
+
+    Parameters
+    -------
+    r, theta : floats or arrays
+        Polar coordinates
+
+    Returns
+    ----------
+    x, y : floats or arrays
+        Cartesian coordinates
+    """
+
+    y = r * np.cos(theta)   # θ referenced to vertical
+    x = r * np.sin(theta)
+    return x, y
 
 
 def get_si_prefix(scale, full_units=False):
@@ -160,6 +312,29 @@ def calculate_aspect(shape, extent):
         return -dx / dy
 
 
+def electric_radial_average(sdf_data):
+    ex = sdf_data.__dict__[Electric_Field_Ex]
+    ey = sdf_data.__dict__[Electric_Field_Ey]
+
+    x_grid = ex.grid_mid.data[0]
+    y_grid = ey.grid_mid.data[1]
+    ex = ex.data
+    ey = ey.data
+
+    X, Y = np.meshgrid(x_grid, y_grid)
+    R, T = cart2polar(X, Y)
+
+    er = np.multiply(ex, np.cos(T)) + np.multiply(ey, np.sin(T))
+    et = np.multiply(ey, np.cos(T)) - np.multiply(ex, np.sin(T))
+
+    o, r, t = reproject_image_into_polar(er, origin=None, Jacobian=False, dr=1, dt=None)
+
+    o_ma = np.ma.masked_equal(o, 0.)
+    avg = np.average(o_ma, axis=1)
+
+    return avg, r, t
+
+
 def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     global verbose, dpi
 
@@ -222,24 +397,29 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     if verbose > 0:
         print('Found {} files to plot'.format(len(file_list)))
 
+    rtest = np.array([])
+    ttest = np.array([])
     data = []
     for f in file_list:
         d = sdf.read(f, mmap=0)
-        var = d.__dict__[varname]
-        data.append(var.data)
+        avg, r, t = electric_radial_average(d)
+        if not np.array_equal(r,rtest) or not np.array_equal(t, ttest):
+            print("ERROR: GETTING DIFFERENT RADIAL AND THETA VECTORS")
+        rtest = np.copy(r)
+        ttest = np.copy(t)
+        data.append(avg)
     data = np.asarray(data)
     data = data.T
 
     tmin = sdf.read(file_list[0], mmap=0).Header['time']
     tmax = sdf.read(file_list[-1], mmap=0).Header['time']
-    grid = var.grid_mid
-    xmin = np.min(grid.data[0])
-    xmax = np.max(grid.data[0])
+    rmin = np.min(r)
+    rmax = np.max(r)
 
     shape = data.shape
-    extent = [tmin, tmax, xmax, xmin]
+    extent = [tmin, tmax, rmax, rmin]
 
-    xmult, xsym = get_si_prefix(xmax - xmin)  # y axis
+    rmult, rsym = get_si_prefix(rmax - rmin)  # y axis
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
     if vmin is None and vmax is None:
@@ -254,16 +434,16 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     im = ax.imshow(data, extent=extent, aspect=calculate_aspect(shape, extent), interpolation='none', cmap=cm.coolwarm, vmin=vmin, vmax=vmax)
 
     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * tmult)))
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * rmult)))
     plt.xlabel('t $(' + tsym + 's)$')
-    plt.ylabel(grid.labels[0] + ' $(' + xsym + grid.units[0] + ')$')
+    plt.ylabel('r $(' + rsym + 'm)$')
     # data_label = var.name + ' $(' + sym + var.units + ')$'
-    data_label = 'Electric Field $(' + sym + var.units + ')$'
-    plt.title('Electric Field Evolution')
+    data_label = 'Radial Electric Field $(' + sym + var.units + ')$'
+    plt.title('Radial Electric Field Evolution')
 
     cbar = fig.colorbar(im, label=data_label, format=FuncFormatter(lambda x, y: x * mult))
     plt.tight_layout()
-    plt.savefig('temp_comp_thermal_nocoll.png', dpi=600, bbox_inches="tight")
+    plt.savefig('rad_test.png', dpi=600, bbox_inches="tight")
     # plt.show()
 
 
@@ -279,7 +459,7 @@ if __name__ == "__main__":
     vmax = None
 
     parser = argparse.ArgumentParser(description='''
-    This generates a movie from a series of SDF files
+    This composite plot of variable evolution
     ''')
     # parser.add_argument('variable', type=str, default=varname, nargs='?',
     #                     help="Variable to plot")
