@@ -353,9 +353,9 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * rmult)))
     plt.xlabel('t $(' + tsym + 's)$')
     plt.ylabel('r $(' + rsym + 'm)$')
-    # data_label = var.name + ' $(' + sym + var.units + ')$'
-    data_label = 'Radial Electric Field $(' + sym + var.units + ')$'
-    plt.title('Radial Electric Field Evolution')
+    data_label = 'Radial ' + var.name + ' Distribution $(' + sym + var.units + ')$'
+    # data_label = 'Radial Electric Field $(' + sym + var.units + ')$'
+    plt.title('Radial Density Evolution')
 
     cbar = fig.colorbar(im, label=data_label, format=FuncFormatter(lambda x, y: x * mult))
     plt.tight_layout()
