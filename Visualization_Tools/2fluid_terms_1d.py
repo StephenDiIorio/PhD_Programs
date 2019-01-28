@@ -117,7 +117,7 @@ def get_var_range(sdfdata):
     if var_max > vmax:
         vmax = var_max
 
-    print vmin, vmax
+    print(vmin, vmax)
     return vmin, vmax
 
 
@@ -279,7 +279,7 @@ def main():
 
     limit = 5E10
 
-    for i in xrange(len(fname)):
+    for i in range(len(fname)):
         sdfdata = sh.getdata(fname[i])
         # sh.list_variables(sdfdata)
 
