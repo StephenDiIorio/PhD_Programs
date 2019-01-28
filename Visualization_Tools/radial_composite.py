@@ -313,8 +313,8 @@ def calculate_aspect(shape, extent):
 
 
 def electric_radial_average(sdf_data):
-    ex = sdf_data.__dict__[Electric_Field_Ex]
-    ey = sdf_data.__dict__[Electric_Field_Ey]
+    ex = sdf_data.__dict__['Electric_Field_Ex']
+    ey = sdf_data.__dict__['Electric_Field_Ey']
 
     x_grid = ex.grid_mid.data[0]
     y_grid = ey.grid_mid.data[1]
