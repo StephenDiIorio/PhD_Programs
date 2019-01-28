@@ -1,8 +1,10 @@
+from matplotlib import use
+use('Agg')
 import sdf_helper as sh
 import scipy.constants as sc
 import numpy as np
-from matplotlib import use
-use('Agg')
+# from matplotlib import use
+# use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 plt.ion()
