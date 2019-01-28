@@ -332,7 +332,7 @@ def electric_radial_average(sdf_data):
     o_ma = np.ma.masked_equal(o, 0.)
     avg = np.average(o_ma, axis=1)
 
-    return avg, r, t
+    return avg, R, T
 
 
 def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
@@ -468,7 +468,7 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     mult, sym = get_si_prefix(vmax - vmin)
 
     fig, ax = plt.subplots()
-    im = ax.imshow(data, extent=extent, aspect=calculate_aspect(shape, extent), interpolation='none', cmap=cm.coolwarm, vmin=vmin, vmax=vmax)
+    im = ax.imshow(data, extent=extent, aspect=calculate_aspect(shape, extent), interpolation='none', cmap=cm.coolwarm, vmin=vmin, vmax=vmax, origin='lower')
 
     ax.xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * tmult)))
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * rmult)))
