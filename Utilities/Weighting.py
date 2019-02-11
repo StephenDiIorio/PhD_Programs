@@ -41,11 +41,11 @@ def first_order_weight_2d(x, y, dx, dy, p_values, values=None, weight=None):
         y_pos = p[1]
 
         fi = (x_pos - x_min) / dx
-        i = np.floor(fi, dtype=np.int64)
+        i = int(np.floor(fi))
         hx = fi - i
 
         fj = (y_pos - y_min) / dy
-        j = np.floor(fj, dtype=np.int64)
+        j = int(np.floor(fj))
         hy = fj - j
 
         if values is not None:
