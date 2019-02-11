@@ -3,7 +3,7 @@
 # Makefile for PARTRAC
 #
 CC = g++
-CFLAGS = -Wall -fbounds-checking
+CFLAGS = -Wall# -fbounds-checking
 FFLAGS =
 OBJECTS = main.o motion.o init.o weighting.o
 EXEC = partrac

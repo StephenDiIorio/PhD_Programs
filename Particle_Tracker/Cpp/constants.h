@@ -30,4 +30,4 @@ const double idx[3] = {1.0 / dx[0], 1.0 / dx[1], 1.0 / dx[2]}; //inverse of dx
 const int Ndumps = 1000;
 const int Nmessages = 10;
 const char filename[] = "data.txt";
-const char version[5] = "1.0";
+const char version[4] = "1.0";
