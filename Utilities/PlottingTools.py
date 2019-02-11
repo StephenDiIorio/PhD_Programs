@@ -1,6 +1,6 @@
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.pyplot import register_cmap
 
 
 def get_si_prefix(scale, full_units=False):
@@ -168,8 +168,8 @@ def shiftedColorMap(cmap, min_val, max_val, name='shiftedcmap'):
     '''
     epsilon = 0.001
     start, stop = 0.0, 1.0
-    min_val, max_val = min(0.0, min_val), max(0.0, max_val) # Edit #2
-    midpoint = 1.0 - max_val/(max_val + abs(min_val))
+    min_val, max_val = min(0.0, min_val), max(0.0, max_val)
+    midpoint = 1.0 - max_val / (max_val + abs(min_val))
     cdict = {'red': [], 'green': [], 'blue': [], 'alpha': []}
 
     # regular index to compute the colors
@@ -179,7 +179,7 @@ def shiftedColorMap(cmap, min_val, max_val, name='shiftedcmap'):
 
     for ri, si in zip(reg_index, shift_index):
         if abs(si - midpoint) < epsilon:
-            r, g, b, a = cmap(0.5) # 0.5 = original midpoint.
+            r, g, b, a = cmap(0.5)
         else:
             r, g, b, a = cmap(ri)
 
@@ -188,7 +188,7 @@ def shiftedColorMap(cmap, min_val, max_val, name='shiftedcmap'):
         cdict['blue'].append((si, b, b))
         cdict['alpha'].append((si, a, a))
 
-    newcmap = matplotlib.colors.LinearSegmentedColormap(name, cdict)
-    plt.register_cmap(cmap=newcmap)
+    newcmap = LinearSegmentedColormap(name, cdict)
+    register_cmap(cmap=newcmap)
 
     return newcmap

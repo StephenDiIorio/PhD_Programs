@@ -1,3 +1,6 @@
+from matplotlib import use
+use('Agg')
+
 import glob
 import os.path
 import sys
@@ -31,16 +34,17 @@ def in_domain(p, x, y):
 
 
 def main():
-    species = "Argon1"
+    species = "Electron"
 
-    path = "/Users/stephendiiorio/Desktop/"
-    fnums = ["restart0010"]
+    path = "/scratch/lsa_flux/diiorios/2d_run/"
+    fnums = ["0200"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
 
     for i in range(len(fname)):
         sdfdata = sdf.read(fname[i])
+        print(sdfdata.Header['time'])
 
         grid = sdfdata.__dict__["Grid_Grid"].data
 
