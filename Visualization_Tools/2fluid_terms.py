@@ -1,10 +1,26 @@
-import sdf_helper as sh
-import scipy.constants as sc
-import numpy as np
-from matplotlib import use
-use('Agg')
+import glob
+import os.path
+import sys
+
+package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
+sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
+
 import matplotlib.pyplot as plt
-plt.ion()
+import numpy as np
+import scipy.constants as sc
+from matplotlib import use
+
+import sdf
+
+use('Agg')
+
+
+plt.rc('font', size=20)        # controls default text sizes
+plt.rc('axes', titlesize=18)   # fontsize of the axes title
+plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
+plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
+plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
+plt.rc('legend', fontsize=16)  # legend fontsize
 
 
 def get_varname(varname, species=None):
@@ -163,8 +179,8 @@ def main():
 
     limit = 10E9
 
-    for i in xrange(len(fname)):
-        sdfdata = sh.getdata(fname[i])
+    for i in range(len(fname)):
+        sdfdata = sdf.read(fname[i])
         # sh.list_variables(sdfdata)
 
         e_var = sdfdata.Electric_Field_Ey

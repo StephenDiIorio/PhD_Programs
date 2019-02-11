@@ -1,12 +1,11 @@
 from scipy.constants import physical_constants
-import sdf_helper as sh
+import sdf
 import numpy as np
 from matplotlib import use, rc
 from matplotlib.ticker import FuncFormatter
 use('Agg')
 rc('mathtext', default='regular')
 import matplotlib.pyplot as plt
-# plt.ion()
 
 
 def get_si_prefix(scale):
@@ -31,7 +30,7 @@ if __name__ == "__main__":
     f_num = "0015"
     f_name = path + f_num + ".sdf"
 
-    sdfdata = sh.getdata(f_name)
+    sdfdata = sdf.read(f_name)
     electron_en = sdfdata.Particles_Ek_Electron
     electron_en_data = np.copy(electron_en.data)
     electron_en_data *= physical_constants["joule-electron volt relationship"][0]

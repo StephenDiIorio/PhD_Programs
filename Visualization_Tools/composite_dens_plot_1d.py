@@ -1,137 +1,34 @@
-import sdf
 import glob
+import os.path
+import sys
+
+package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
+sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
+
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import use
-use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 from matplotlib.ticker import FuncFormatter
-# plt.ion()
+
+import sdf
+from PlottingTools import get_si_prefix, get_var_range_from_sdf_files, calculate_aspect
+
+use('Agg')
 
 
-plt.rc('font', size=20)          # controls default text sizes
-plt.rc('axes', titlesize=18)     # fontsize of the axes title
-plt.rc('axes', labelsize=15)     # fontsize of the x and y labels
-plt.rc('xtick', labelsize=12)    # fontsize of the tick labels
-plt.rc('ytick', labelsize=12)    # fontsize of the tick labels
-plt.rc('legend', fontsize=16)    # legend fontsize
-
-
-def get_si_prefix(scale, full_units=False):
-    scale = abs(scale)
-    mult = 1
-    sym = ''
-
-    if scale < 1e-24:
-        full_units = True
-    elif scale < 1e-21:
-        # yocto
-        mult = 1e24
-        sym = 'y'
-    elif scale < 1e-19:
-        # zepto
-        mult = 1e21
-        sym = 'z'
-    elif scale < 1e-16:
-        # atto
-        mult = 1e18
-        sym = 'a'
-    elif scale < 1e-13:
-        # femto
-        mult = 1e15
-        sym = 'f'
-    elif scale < 1e-10:
-        # pico
-        mult = 1e12
-        sym = 'p'
-    elif scale < 1e-7:
-        # nano
-        mult = 1e9
-        sym = 'n'
-    elif scale < 1e-4:
-        # micro
-        mult = 1e6
-        sym = '{\mu}'
-    elif scale < 1e-1:
-        # milli
-        mult = 1e3
-        sym = 'm'
-    elif scale >= 1e27:
-        full_units = True
-    elif scale >= 1e24:
-        # yotta
-        mult = 1e-24
-        sym = 'Y'
-    elif scale >= 1e21:
-        # zetta
-        mult = 1e-21
-        sym = 'Z'
-    elif scale >= 1e18:
-        # exa
-        mult = 1e-18
-        sym = 'E'
-    elif scale >= 1e15:
-        # peta
-        mult = 1e-15
-        sym = 'P'
-    elif scale >= 1e12:
-        # tera
-        mult = 1e-12
-        sym = 'T'
-    elif scale >= 1e9:
-        # giga
-        mult = 1e-9
-        sym = 'G'
-    elif scale >= 1e6:
-        # mega
-        mult = 1e-6
-        sym = 'M'
-    elif scale >= 1e3:
-        # kilo
-        mult = 1e-3
-        sym = 'k'
-
-    if full_units:
-        scale = scale * mult
-        if scale <= 0:
-            pwr = 0
-        else:
-            pwr = (-np.floor(np.log10(scale)))
-
-        mult = mult * np.power(10.0, pwr)
-        if np.rint(pwr) != 0:
-            sym = "(10^{%.0f})" % (-pwr) + sym
-
-    return mult, sym
-
-
-def get_var_range(file_list, varname):
-    """Get a the data range for a given variable across an entire run"""
-
-    vmin = float("inf")
-    vmax = -float("inf")
-
-    for f in file_list:
-        try:
-            data = sdf.read(f, mmap=0)
-            var = data.__dict__[varname].data
-            var_min = var.min()
-            var_max = var.max()
-            if var_min < vmin:
-                vmin = var_min
-            if var_max > vmax:
-                vmax = var_max
-        except:
-            pass
-
-    if verbose > 0:
-        print vmin, vmax
-
-    return vmin, vmax
+plt.rc('font', size=20)        # controls default text sizes
+plt.rc('axes', titlesize=18)   # fontsize of the axes title
+plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
+plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
+plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
+plt.rc('legend', fontsize=16)  # legend fontsize
 
 
 def get_files(wkdir='Data'):
-    """Get a list of SDF filenames belonging to the same run"""
+    """
+    Get a list of SDF filenames belonging to the same run
+    """
     flist = glob.glob(wkdir + "/[0-9]*.sdf")
     flist = sorted(flist)
 
@@ -143,21 +40,12 @@ def clean_file_list(file_list, varname):
 
     for f in file_list:
         try:
-            data = sdf.read(f, mmap=0)
+            data = sdf.read(f)
             data.__dict__[varname]
             new_file_list.append(f)
         except KeyError:
             pass
     return new_file_list
-
-
-def calculate_aspect(shape, extent):
-    dx = (extent[1] - extent[0]) / float(shape[1])
-    dy = (extent[3] - extent[2]) / float(shape[0])
-    if dx / dy > 0:
-        return dx / dy
-    else:
-        return -dx / dy
 
 
 def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
@@ -224,14 +112,14 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
 
     data = []
     for f in file_list:
-        d = sdf.read(f, mmap=0)
+        d = sdf.read(f)
         var = d.__dict__[varname]
         data.append(var.data)
     data = np.asarray(data)
     data = data.T
 
-    tmin = sdf.read(file_list[0], mmap=0).Header['time']
-    tmax = sdf.read(file_list[-1], mmap=0).Header['time']
+    tmin = sdf.read(file_list[0]).Header['time']
+    tmax = sdf.read(file_list[-1]).Header['time']
     grid = var.grid_mid
     xmin = np.min(grid.data[0])
     xmax = np.max(grid.data[0])
@@ -243,11 +131,11 @@ def composite_field_plot(varname, vmin=None, vmax=None, directory='Data'):
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
     if vmin is None and vmax is None:
-        vmin, vmax = get_var_range(file_list, varname)
+        vmin, vmax = get_var_range_from_sdf_files(file_list, varname)
     elif vmin is None:
-        vmin = get_var_range(file_list, varname)[0]
+        vmin = get_var_range_from_sdf_files(file_list, varname)[0]
     elif vmax is None:
-        vmax = get_var_range(file_list, varname)[1]
+        vmax = get_var_range_from_sdf_files(file_list, varname)[1]
     mult, sym = get_si_prefix(vmax - vmin)
 
     fig, ax = plt.subplots()

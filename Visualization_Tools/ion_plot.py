@@ -1,12 +1,13 @@
 import glob
-import scipy.constants as sc
+
+import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import use, rc
+import scipy.constants as sc
+from matplotlib import rc, use
 from matplotlib.ticker import FuncFormatter
+
 use('Agg')
 rc('mathtext', default='regular')
-import matplotlib.pyplot as plt
-plt.ion()
 
 
 def get_si_prefix(scale):
@@ -33,8 +34,8 @@ def ion_intens(energy, ion_charge):
 def main():
     filepath = "Ion_Results/10000fs/2Levels_N"
     files = glob.glob(filepath + "/*.npz")
-    # print files
-    # print len(files)
+    # print(files)
+    # print(len(files))
 
     title = 'Nitrogen Ionization Last 2 Ionization Levels(10000fs), w BSI, wo Multiphoton'
     # ion_energies = [13.59844]
@@ -56,9 +57,9 @@ def main():
     for i, val in enumerate(ion_energies):
         calc_intens.append(ion_intens(val, i + 1))
 
-    # print e_nums
-    # print e_field
-    # print calc_intens
+    # print(e_nums)
+    # print(e_field)
+    # print(calc_intens)
 
     fig = plt.figure()
     plt.title(title, y=1.12)

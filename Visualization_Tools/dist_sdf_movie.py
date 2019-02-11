@@ -1,18 +1,25 @@
-#! /usr/bin/env python
-
 # TODO: specifying only vmin or vmax might leave one larger (or smaller)
 # than the other (vmin might be greater than vmax for example)
 # TODO: allow negitve number be passed in as command line argument for
 # vmin and vmax
 
-import sdf
 import glob
+import os.path
+import sys
+
+package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
+sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
+
 import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 import numpy as np
+
+import sdf
+from PlottingTools import get_si_prefix, get_var_range_from_sdf_files
+
+mpl.use('Agg')
 try:
     from mpl_toolkits.axes_grid1 import make_axes_locatable
 except:
@@ -31,95 +38,10 @@ dpi = 300
 verbose = 0
 
 
-def get_si_prefix(scale, full_units=False):
-    scale = abs(scale)
-    mult = 1
-    sym = ''
-
-    if scale < 1e-24:
-        full_units = True
-    elif scale < 1e-21:
-        # yocto
-        mult = 1e24
-        sym = 'y'
-    elif scale < 1e-19:
-        # zepto
-        mult = 1e21
-        sym = 'z'
-    elif scale < 1e-16:
-        # atto
-        mult = 1e18
-        sym = 'a'
-    elif scale < 1e-13:
-        # femto
-        mult = 1e15
-        sym = 'f'
-    elif scale < 1e-10:
-        # pico
-        mult = 1e12
-        sym = 'p'
-    elif scale < 1e-7:
-        # nano
-        mult = 1e9
-        sym = 'n'
-    elif scale < 1e-4:
-        # micro
-        mult = 1e6
-        sym = '{\mu}'
-    elif scale < 1e-1:
-        # milli
-        mult = 1e3
-        sym = 'm'
-    elif scale >= 1e27:
-        full_units = True
-    elif scale >= 1e24:
-        # yotta
-        mult = 1e-24
-        sym = 'Y'
-    elif scale >= 1e21:
-        # zetta
-        mult = 1e-21
-        sym = 'Z'
-    elif scale >= 1e18:
-        # exa
-        mult = 1e-18
-        sym = 'E'
-    elif scale >= 1e15:
-        # peta
-        mult = 1e-15
-        sym = 'P'
-    elif scale >= 1e12:
-        # tera
-        mult = 1e-12
-        sym = 'T'
-    elif scale >= 1e9:
-        # giga
-        mult = 1e-9
-        sym = 'G'
-    elif scale >= 1e6:
-        # mega
-        mult = 1e-6
-        sym = 'M'
-    elif scale >= 1e3:
-        # kilo
-        mult = 1e-3
-        sym = 'k'
-
-    if full_units:
-        scale = scale * mult
-        if scale <= 0:
-            pwr = 0
-        else:
-            pwr = (-np.floor(np.log10(scale)))
-        mult = mult * np.power(10.0, pwr)
-        if np.rint(pwr) != 0:
-            sym = "(10^{%.0f})" % (-pwr) + sym
-
-    return mult, sym
-
-
 def get_files(wkdir='Data', base=None):
-    """Get a list of SDF filenames belonging to the same run"""
+    """
+    Get a list of SDF filenames belonging to the same run
+    """
     import os.path
 
     if base:
@@ -135,7 +57,7 @@ def get_files(wkdir='Data', base=None):
     # Find the job id
     for f in flist:
         try:
-            data = sdf.read(f, mmap=0)
+            data = sdf.read(f)
             job_id = data.Header['jobid1']
             break
         except:
@@ -146,7 +68,7 @@ def get_files(wkdir='Data', base=None):
     # Add all files matching the job id
     for f in sorted(flist):
         try:
-            data = sdf.read(f, mmap=0)
+            data = sdf.read(f)
             file_job_id = data.Header['jobid1']
             if file_job_id == job_id:
                 file_list.append(f)
@@ -154,31 +76,6 @@ def get_files(wkdir='Data', base=None):
             pass
 
     return file_list
-
-
-def get_var_range(file_list, varname, scale):
-    """Get a the data range for a given variable across an entire run"""
-
-    vmin = float("inf")
-    vmax = -float("inf")
-
-    vscale = get_scale(file_list[0], varname, scale)
-
-    for f in file_list:
-        try:
-            data = sdf.read(f, mmap=0)
-            var = vscale * data.__dict__[varname].data
-            var_min = var.min()
-            var_max = var.max()
-            if var_min < vmin:
-                vmin = var_min
-            if var_max > vmax:
-                vmax = var_max
-        except:
-            pass
-
-    print vmin, vmax
-    return vmin, vmax
 
 
 def find_renderer(fig):
@@ -200,7 +97,9 @@ def find_renderer(fig):
 
 def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
                 figsize=None, ax=None):
-    """Plot the given variable for each file from a simulation"""
+    """
+    Plot the given variable for each file from a simulation
+    """
 
     from matplotlib.ticker import FuncFormatter
     global verbose, title_info
@@ -232,12 +131,12 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
 
     # Draw initial plot
     f = filename
-    data = sdf.read(f, mmap=0)
+    data = sdf.read(f)
     var = data.__dict__[varname]
     grid = var.grid
     num_x_axis_pts, num_y_axis_pts = grid.dims
     vdata = var.data.reshape(num_x_axis_pts, num_y_axis_pts).T
-    print vdata
+    print(vdata)
 
     vscale = get_scale(filename, varname, scale)
 
@@ -274,7 +173,7 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
     vdata = vdata * vscale
 
     if vmin is None:
-        vmin, vmax = get_var_range((filename,), varname, scale)
+        vmin, vmax = get_var_range_from_sdf_files((filename,), varname, scale)
 
     if verbose > 1:
         print('Plotting data')
@@ -349,11 +248,11 @@ def plot_first_figure(file_list, varname, vmin=None, vmax=None, scale=False):
     if verbose > 1:
         print('Getting data range')
     if vmin is None and vmax is None:
-        vmin, vmax = get_var_range(file_list, varname, scale)
+        vmin, vmax = get_var_range_from_sdf_files(file_list, varname, scale)
     elif vmin is None:
-        vmin = get_var_range(file_list, varname, scale)[0]
+        vmin = get_var_range_from_sdf_files(file_list, varname, scale)[0]
     elif vmax is None:
-        vmax = get_var_range(file_list, varname, scale)[1]
+        vmax = get_var_range_from_sdf_files(file_list, varname, scale)[1]
 
     if verbose > 1:
         print('Found data range ({}, {})'.format(vmin, vmax))
@@ -385,7 +284,7 @@ def plot_first_figure(file_list, varname, vmin=None, vmax=None, scale=False):
     # Get positions of the title's step and time text fields so that they
     # can be updated when animating
 
-    data = sdf.read(file_list[-1], mmap=0)
+    data = sdf.read(file_list[-1])
     var = data.__dict__[varname]
     mult, sym = get_si_prefix(vmax - vmin)
 
@@ -438,7 +337,7 @@ def get_scale(filename, varname, scale=False):
     r2 = 1
     if scale:
         print('WARNING: SCALING NOT IMPLEMENTED FOR OLD DIST FNS')
-        data = sdf.read(filename, mmap=0)
+        data = sdf.read(filename)
         var = data.__dict__[varname]
         r0 = data.Grid_Grid_Orig.data[0][0]**2
         if (var.grid.dims[0] == 1):
@@ -469,14 +368,16 @@ get_scale.vscale = None
 # EDIT: ADD DIRECTORY AS OPTIONAL ARGUMENT
 def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
                  base=None):
-    """Plot the given variable for each file from a simulation"""
+    """
+    Plot the given variable for each file from a simulation
+    """
     from matplotlib.transforms import TransformedBbox, Affine2D
     global verbose
 
     # file_list = get_files(base=base)
     # EDIT: CALL GET_FILES WITH DIRECTORY ARGUMENT
     file_list = get_files(wkdir=directory, base=base)
-    print file_list
+    print(file_list)
     if verbose > 0:
         print('Found {} files to plot'.format(len(file_list)))
     im, fig = plot_first_figure(file_list, varname, vmin, vmax, scale)
@@ -486,7 +387,7 @@ def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
 
     # Draw plots
     def init():
-        data = sdf.read(file_list[0], mmap=0)
+        data = sdf.read(file_list[0])
         # var = data.__dict__[varname]
         fig.t1 = fig.text(fig.x1, fig.y,
                           'step={}, '.format(data.Header['step']),
@@ -499,7 +400,7 @@ def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
     def update(filename):
         if verbose > 0:
             print('Generating frame for file {}'.format(filename))
-        data = sdf.read(filename, mmap=0)
+        data = sdf.read(filename)
         var = data.__dict__[varname]
         grid = var.grid
         num_x_axis_pts, num_y_axis_pts = grid.dims
@@ -539,7 +440,7 @@ def list_variables(data):
 def list_file_variables(base=None):
     file_list = get_files(base=base)
     f = file_list[0]
-    data = sdf.read(f, mmap=0)
+    data = sdf.read(f)
     list_variables(data)
 
 

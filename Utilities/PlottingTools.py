@@ -1,10 +1,4 @@
-import sys
 import numpy as np
-try:
-    import sdf
-    sdf_mod_name = 'sdf'
-except ImportError:
-    pass
 
 
 def get_si_prefix(scale, full_units=False):
@@ -96,7 +90,9 @@ def get_si_prefix(scale, full_units=False):
 
 
 def get_var_range(data):
-    """Get a the data range for a given variable across an entire run."""
+    """
+    Get a the data range for a given variable across an entire run.
+    """
 
     vmin = float("inf")
     vmax = -float("inf")
@@ -112,8 +108,12 @@ def get_var_range(data):
 
 
 def get_var_range_from_sdf_files(file_list, varname):
-    """Get a the data range for a given variable across an entire run"""
-    if sdf_mod_name not in sys.modules:
+    """
+    Get a the data range for a given variable across an entire run.
+    """
+    try:
+        import sdf
+    except ImportError:
         raise ImportError("SDF module from EPOCH is not properly installed. Cannot use this function.")
 
     vmin = float("inf")
@@ -121,7 +121,7 @@ def get_var_range_from_sdf_files(file_list, varname):
 
     for f in file_list:
         try:
-            data = sdf.read(f, mmap=0)
+            data = sdf.read(f)
             var = data.__dict__[varname].data
             var_min = var.min()
             var_max = var.max()

@@ -1,103 +1,25 @@
-import sdf
 import glob
+import os.path
+import sys
+
+package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
+sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
+
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import use
-use('Agg')
-import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
-plt.ion()
 
+import sdf
+from PlottingTools import get_si_prefix
 
-def get_si_prefix(scale, full_units=False):
-    scale = abs(scale)
-    mult = 1
-    sym = ''
-
-    if scale < 1e-24:
-        full_units = True
-    elif scale < 1e-21:
-        # yocto
-        mult = 1e24
-        sym = 'y'
-    elif scale < 1e-19:
-        # zepto
-        mult = 1e21
-        sym = 'z'
-    elif scale < 1e-16:
-        # atto
-        mult = 1e18
-        sym = 'a'
-    elif scale < 1e-13:
-        # femto
-        mult = 1e15
-        sym = 'f'
-    elif scale < 1e-10:
-        # pico
-        mult = 1e12
-        sym = 'p'
-    elif scale < 1e-7:
-        # nano
-        mult = 1e9
-        sym = 'n'
-    elif scale < 1e-4:
-        # micro
-        mult = 1e6
-        sym = '{\mu}'
-    elif scale < 1e-1:
-        # milli
-        mult = 1e3
-        sym = 'm'
-    elif scale >= 1e27:
-        full_units = True
-    elif scale >= 1e24:
-        # yotta
-        mult = 1e-24
-        sym = 'Y'
-    elif scale >= 1e21:
-        # zetta
-        mult = 1e-21
-        sym = 'Z'
-    elif scale >= 1e18:
-        # exa
-        mult = 1e-18
-        sym = 'E'
-    elif scale >= 1e15:
-        # peta
-        mult = 1e-15
-        sym = 'P'
-    elif scale >= 1e12:
-        # tera
-        mult = 1e-12
-        sym = 'T'
-    elif scale >= 1e9:
-        # giga
-        mult = 1e-9
-        sym = 'G'
-    elif scale >= 1e6:
-        # mega
-        mult = 1e-6
-        sym = 'M'
-    elif scale >= 1e3:
-        # kilo
-        mult = 1e-3
-        sym = 'k'
-
-    if full_units:
-        scale = scale * mult
-        if scale <= 0:
-            pwr = 0
-        else:
-            pwr = (-np.floor(np.log10(scale)))
-
-        mult = mult * np.power(10.0, pwr)
-        if np.rint(pwr) != 0:
-            sym = "(10^{%.0f})" % (-pwr) + sym
-
-    return mult, sym
+use('Agg')
 
 
 def get_files(wkdir='Data', base=None):
-    """Get a list of SDF filenames belonging to the same run"""
+    """
+    Get a list of SDF filenames belonging to the same run
+    """
     import os.path
 
     if base:
@@ -118,7 +40,7 @@ def clean_file_list(file_list, varname):
 
     for f in file_list:
         try:
-            data = sdf.read(f, mmap=0)
+            data = sdf.read(f)
             dummy = data.__dict__[varname]
             new_file_list.append(f)
         except KeyError:
@@ -197,7 +119,7 @@ def main():
     part = []
 
     for f in flist:
-        data = sdf.read(f, mmap=0)
+        data = sdf.read(f)
         time.append(float(data.Header['time']))
         absorbed.append(data.__dict__[absorb_key].data)
         injected.append(data.__dict__[inject_key].data)
@@ -247,8 +169,6 @@ def main():
 
     plt.tight_layout()
     plt.savefig('test.png')
-    return
-
     return
 
 
