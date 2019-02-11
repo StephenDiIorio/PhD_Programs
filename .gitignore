@@ -1,4 +1,5 @@
 *.npz
-*.pdf
-*.png
 *.fig
+
+*.png
+*.pdf
