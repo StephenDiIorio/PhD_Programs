@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.constants import c, epsilon_0, e, m_e
+from scipy.constants import c, e, epsilon_0, m_e
 
 
 __wp_coeff = c * 100.  # speed of light in [cm / s]
@@ -26,6 +26,7 @@ def pos_si_to_osiris_wp(pos_si, wp):
         Position in OSIRIS units normalized to the plasma frequency.
 
     """
+
     pos_si = np.float64(pos_si) * np.float64(100.)  # convert to [cm]
     wp = np.float64(wp)
     return pos_si * wp / __wp_coeff
@@ -50,6 +51,7 @@ def pos_osiris_to_si_wp(pos_osiris, wp):
         Position in SI units [m].
 
     """
+
     pos_osiris = np.float64(pos_osiris) / np.float64(100.)  # convert to [m]
     wp = np.float64(wp)
     return pos_osiris * __wp_coeff / wp
@@ -72,6 +74,7 @@ def pos_si_to_osiris_n0(pos_si, n0):
         Position in OSIRIS units normalized to the number density.
 
     """
+
     pos_si = np.float64(pos_si) * np.float64(100.)  # convert to [cm]
     n0 = np.float64(n0) * np.float64(1.e-6)  # convert to [cm^3]
     return pos_si * np.sqrt(n0) / __n0_coeff
@@ -95,6 +98,7 @@ def pos_osiris_to_si_n0(pos_osiris, n0):
         Position in SI units [m].
 
     """
+
     pos_osiris = np.float64(pos_osiris) / np.float64(100.)  # convert to [m]
     n0 = np.float64(n0) * np.float64(1.e-6)  # convert to [cm^3]
     return pos_osiris * __n0_coeff / np.sqrt(n0)
@@ -141,6 +145,7 @@ def efield_si_to_osiris_wp(efield_si, wp):
         frequency.
 
     """
+
     efield_si = np.float64(efield_si) / np.float64(1.e11)  # convert to GV/cm
     wp = np.float64(wp)
     return efield_si / __ef_wp_coeff / wp
@@ -165,6 +170,7 @@ def efield_osiris_to_si_wp(efield_osiris, wp):
         Electric field amplitude in SI units [V / m].
 
     """
+
     efield_osiris = np.float64(efield_osiris) * np.float64(1.e11)  # convert to V/m
     wp = np.float64(wp)
     return efield_osiris * __ef_wp_coeff * wp
@@ -189,6 +195,7 @@ def efield_si_to_osiris_n0(efield_si, n0):
         density.
 
     """
+
     efield_si = np.float64(efield_si) / np.float64(1.e11)  # convert to GV/cm
     n0 = np.float64(n0) * np.float64(1.e-6)  # convert to [cm^3]
     return efield_si / __ef_n0_coeff / np.sqrt(n0)
@@ -212,6 +219,7 @@ def efield_osiris_to_si_n0(efield_osiris, n0):
         Electric field amplitude in SI units [V / m].
 
     """
+
     efield_osiris = np.float64(efield_osiris) * np.float64(1.e11)  # convert to V/m
     n0 = np.float64(n0) * np.float64(1.e-6)  # convert to [cm^3]
     return efield_osiris * __ef_n0_coeff * np.sqrt(n0)
@@ -243,6 +251,7 @@ def bfield_si_to_osiris_wp(bfield_si, wp):
         frequency.
 
     """
+
     bfield_si = np.float64(bfield_si) * np.float64(1.e4)  # convert to [G]
     wp = np.float64(wp)
     return bfield_si / __bf_wp_coeff / wp
@@ -267,6 +276,7 @@ def bfield_osiris_to_si_wp(bfield_osiris, wp):
         Magnetic field amplitude in SI units [T].
 
     """
+
     bfield_osiris = np.float64(bfield_osiris) / np.float64(1.e4)  # convert to [T]
     wp = np.float64(wp)
     return bfield_osiris * __bf_wp_coeff * wp
@@ -291,6 +301,7 @@ def bfield_si_to_osiris_n0(bfield_si, n0):
         density.
 
     """
+
     bfield_si = np.float64(bfield_si) * np.float64(1.e4)  # convert to [G]
     n0 = np.float64(n0) * np.float64(1.e-6)  # convert to [cm^3]
     return bfield_si / __bf_n0_coeff / np.sqrt(n0)
@@ -314,6 +325,7 @@ def bfield_osiris_to_si_n0(bfield_osiris, n0):
         Magnetic field amplitude in SI units [T].
 
     """
+
     bfield_osiris = np.float64(bfield_osiris) / np.float64(1.e4)  # convert to [T]
     n0 = np.float64(n0) * np.float64(1.e-6)  # convert to [cm^3]
     return bfield_osiris * __bf_n0_coeff * np.sqrt(n0)

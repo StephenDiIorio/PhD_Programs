@@ -1,4 +1,6 @@
-import glob
+from matplotlib import use
+use('Agg')
+
 import os.path
 import sys
 
@@ -8,13 +10,10 @@ sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # T
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
-from matplotlib import use
 from matplotlib.ticker import FuncFormatter
 
 import sdf
 from PlottingTools import get_si_prefix, get_var_range
-
-use('Agg')
 
 
 plt.rc('font', size=20)        # controls default text sizes

@@ -2,6 +2,8 @@
 # than the other (vmin might be greater than vmax for example)
 # TODO: allow negitve number be passed in as command line argument for
 # vmin and vmax
+from matplotlib import use
+use('Agg')
 
 import glob
 import os.path
@@ -10,7 +12,6 @@ import sys
 package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
 sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
 
-import matplotlib as mpl
 import matplotlib.animation as animation
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
@@ -18,8 +19,6 @@ import numpy as np
 
 import sdf
 from PlottingTools import get_si_prefix, get_var_range_from_sdf_files
-
-mpl.use('Agg')
 
 try:
     from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -44,6 +43,7 @@ def get_files(wkdir='Data', base=None):
     """
     Get a list of SDF filenames belonging to the same run
     """
+
     import os.path
 
     if base:
@@ -383,6 +383,7 @@ def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
     """
     Plot the given variable for each file from a simulation
     """
+
     from matplotlib.transforms import TransformedBbox, Affine2D
     global verbose
 

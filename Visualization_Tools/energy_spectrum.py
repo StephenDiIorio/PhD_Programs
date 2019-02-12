@@ -1,11 +1,15 @@
-from scipy.constants import physical_constants
-import sdf
-import numpy as np
-from matplotlib import use, rc
-from matplotlib.ticker import FuncFormatter
+from matplotlib import use
 use('Agg')
-rc('mathtext', default='regular')
+
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import rc
+from matplotlib.ticker import FuncFormatter
+from scipy.constants import physical_constants
+
+import sdf
+
+rc('mathtext', default='regular')
 
 
 def get_si_prefix(scale):

@@ -1,3 +1,6 @@
+from matplotlib import use
+use('Agg')
+
 import os.path
 import sys
 
@@ -7,12 +10,9 @@ sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # T
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import use
 
 from CoordinateTransforms import cart2polar, reproject_image_into_polar
 import sdf
-
-use('Agg')
 
 
 def main():

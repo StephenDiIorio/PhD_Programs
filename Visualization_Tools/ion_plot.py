@@ -1,12 +1,14 @@
+from matplotlib import use
+use('Agg')
+
 import glob
 
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
-from matplotlib import rc, use
+from matplotlib import rc
 from matplotlib.ticker import FuncFormatter
 
-use('Agg')
 rc('mathtext', default='regular')
 
 

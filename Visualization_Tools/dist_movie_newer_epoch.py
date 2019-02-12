@@ -1,3 +1,6 @@
+from matplotlib import use
+use('Agg')
+
 import glob
 import os.path
 import sys
@@ -10,19 +13,17 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
-from matplotlib import use
 from matplotlib.ticker import FuncFormatter
 
 import sdf
 from PlottingTools import get_si_prefix, get_var_range_from_sdf_files
-
-use('Agg')
 
 
 def get_files(wkdir='Data', base=None):
     """
     Get a list of SDF filenames belonging to the same run
     """
+
     import os.path
 
     if base:

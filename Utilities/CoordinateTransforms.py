@@ -15,7 +15,6 @@ def cart2polar(x, y):
     -------
     r, theta : floats or arrays
         Polar coordinates
-
     """
 
     r = np.sqrt(x**2 + y**2)
@@ -140,7 +139,7 @@ def index_coords(data, origin=None):
 
     ny, nx = data.shape[:2]
     if origin is None:
-        origin_x, origin_y = nx//2, ny//2
+        origin_x, origin_y = nx // 2, ny // 2
     else:
         origin_x, origin_y = origin
 

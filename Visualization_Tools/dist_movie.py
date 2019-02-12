@@ -1,3 +1,6 @@
+from matplotlib import use
+use('Agg')
+
 import glob
 import os.path
 import sys
@@ -10,19 +13,17 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
-from matplotlib import use
 from matplotlib.ticker import FuncFormatter
 
 import sdf
 from PlottingTools import get_si_prefix, get_var_range_from_sdf_files
-
-use('Agg')
 
 
 def get_files(wkdir='Data', base=None):
     """
     Get a list of SDF filenames belonging to the same run
     """
+
     import os.path
 
     if base:
@@ -76,6 +77,7 @@ def plot_figure(filename, varname, vmin=None, vmax=None):
     """
     Plot the given variable for each file from a simulation
     """
+
     global verbose
 
     if verbose > 1:
@@ -167,7 +169,10 @@ def plot_first_figure(file_list, varname, vmin=None, vmax=None):
 # def plot_figures(varname, scale=False, base=None):
 # EDIT: ADD DIRECTORY AS OPTIONAL ARGUMENT
 def plot_figures(varname, vmin=None, vmax=None, directory='Data', base=None):
-    """Plot the given variable for each file from a simulation"""
+    """
+    Plot the given variable for each file from a simulation
+    """
+
     global verbose, dpi
 
     # file_list = get_files(base=base)

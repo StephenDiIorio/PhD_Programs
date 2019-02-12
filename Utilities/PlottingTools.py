@@ -113,6 +113,7 @@ def get_var_range_from_sdf_files(file_list, varname):
     """
     Get a the data range for a given variable across an entire run.
     """
+
     try:
         import sdf
     except ImportError:
@@ -166,6 +167,7 @@ def shiftedColorMap(cmap, min_val, max_val, name='shiftedcmap'):
           Defaults to 1.0 (no upper ofset). Should be between
           `midpoint` and 1.0.
     '''
+
     epsilon = 0.001
     start, stop = 0.0, 1.0
     min_val, max_val = min(0.0, min_val), max(0.0, max_val)

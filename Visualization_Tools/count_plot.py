@@ -1,11 +1,12 @@
+from matplotlib import use
+use('Agg')
+
 import glob
 
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib import cm, rc, use
+from matplotlib import cm, rc
 from matplotlib.ticker import FuncFormatter
-
-use('Agg')
 
 try:
     from mpl_toolkits.axes_grid1 import make_axes_locatable

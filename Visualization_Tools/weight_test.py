@@ -1,7 +1,6 @@
 from matplotlib import use
 use('Agg')
 
-import glob
 import os.path
 import sys
 
