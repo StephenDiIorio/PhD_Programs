@@ -19,7 +19,6 @@ def first_order_weight_2d(x, y, dx, dy, p_values, values=None, weight=None):
         of the particle (velocity, temp, etc.) to weight onto
         the grid
     weight (opt) : an array containing the particle weightings
-        if they have unequal weighting
 
     Returns
     -------
