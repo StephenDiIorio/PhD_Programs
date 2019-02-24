@@ -61,7 +61,7 @@ def main():
         sdfdata = sdf.read(fname[i])
         print(sdfdata.Header['time'])
 
-        grid = sdfdata.__dict__["Grid_Grid"].data
+        grid = sdfdata.__dict__["Grid_Grid_mid"].data
 
         x = grid[0]
         y = grid[1]
