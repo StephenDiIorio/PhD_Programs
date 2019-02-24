@@ -40,7 +40,7 @@ def main():
     species = "Electron"
 
     path = "/scratch/lsa_flux/diiorios/2d_run/"
-    fnums = ["0050"]
+    fnums = ["0200"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
