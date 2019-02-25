@@ -39,7 +39,7 @@ def __Temp_Grad(sdfdata, axis, species=None):
 
     # Can also get grid for each enty via:
     # sdfdata.__dict__[varname].grid.data
-    grid = sdfdata.__dict__["Grid_Grid_mid"]
+    grid = sdfdata.__dict__["Grid_Grid_mid"].data
 
     # get the spatial spacing in grid to perform gradient (deltax,y)
     dx = grid[0][1] - grid[0][0]
@@ -109,8 +109,8 @@ def __map_particle_to_grid(sdfdata, p_var_name, species=None):
     x = grid[0]
     y = grid[1]
 
-    dx = x[1] - x[0]
-    dy = y[1] - y[0]
+    dx = grid[0][1] - grid[0][0]
+    dy = grid[1][1] - grid[1][0]
 
     p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
     p_list = list(zip(p_pos[0], p_pos[1]))
