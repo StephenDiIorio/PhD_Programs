@@ -310,7 +310,8 @@ def main():
     axarr[1].set_ylim([-limit, limit])
     axarr[2].set_ylim([-limit, limit])
 
-    plt.xlabel('x' + ' $(' + xsym + 'm)$')
+    # plt.xlabel('x' + ' $(' + xsym + 'm)$')
+    plt.xlabel('x')
     axarr[1].set_ylabel('Radial Electric Field' + ' $(' + ysym + 'V/m)$')
     # plt.show()
 
