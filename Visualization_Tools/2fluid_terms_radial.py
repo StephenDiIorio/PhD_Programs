@@ -208,7 +208,7 @@ def __radial_average(x_grid, y_grid, field_x, field_y):
 def main():
     species = "Electron"
     path = "/scratch/lsa_flux/diiorios/2d_run/"
-    fnums = ["0100", "0150", "0200"]
+    fnums = ["0300", "0350", "0400"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
