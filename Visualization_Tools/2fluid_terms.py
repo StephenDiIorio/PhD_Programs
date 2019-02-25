@@ -96,9 +96,9 @@ def Hall_Field(sdfdata, axis):
 
 
 def Ideal_MHD_Field(sdfdata, axis, species=None):
-    vel_x_key = get_varname("Particles_Velocity_Vx", species)
-    vel_y_key = get_varname("Particles_Velocity_Vy", species)
-    vel_z_key = get_varname("Particles_Velocity_Vz", species)
+    vel_x_key = get_varname("Particles_Vx", species)
+    vel_y_key = get_varname("Particles_Vy", species)
+    vel_z_key = get_varname("Particles_Vz", species)
     mag_x_key = "Magnetic_Field_Bx"
     mag_y_key = "Magnetic_Field_By"
     mag_z_key = "Magnetic_Field_Bz"
