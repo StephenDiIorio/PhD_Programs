@@ -227,7 +227,7 @@ def main():
     # axarr[0].set_title(species + " files " + str(fnums))
     axarr[0].set_title('Contribution to E Field')
 
-    limit = 5E10
+    limit = 5E9
 
     for i in range(len(fname)):
         sdfdata = sdf.read(fname[i])
@@ -285,13 +285,13 @@ def main():
                                     -limit, limit),
                             'g:',
                             label='Hall Term')
-        l5, = axarr[i].plot(#imhd_r,
-                            np.clip(imhd_avg,
-                                    -limit, limit),
+        # l5, = axarr[i].plot(#imhd_r,
+        #                    np.clip(imhd_avg,
+        #                            -limit, limit),
                             'm-.',
-                            label='Ideal MHD Term')
+        #                    label='Ideal MHD Term')
 
-    ls = [l1, l2, l3, l4, l5]
+    ls = [l1, l2, l3, l4]  #, l5]
     labels = [l.get_label() for l in ls]
     lgd = fig.legend(ls, labels, bbox_to_anchor=(1.05, 1.0), loc=1)
     fig.subplots_adjust(hspace=0)
@@ -299,9 +299,9 @@ def main():
     # plt.xlim(-6.5e-6, 6.5e-6)
     # plt.ylim(-limit, limit)
 
-    xmult, xsym = get_si_prefix(np.max(e_r) - np.min(e_r))
+    # xmult, xsym = get_si_prefix(np.max(e_r) - np.min(e_r))
     ymult, ysym = get_si_prefix(limit - (-limit))
-    axarr[0].xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
+    # axarr[0].xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
     axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
     axarr[1].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
     axarr[2].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
