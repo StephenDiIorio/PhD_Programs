@@ -288,7 +288,7 @@ def main():
         # l5, = axarr[i].plot(#imhd_r,
         #                    np.clip(imhd_avg,
         #                            -limit, limit),
-                            'm-.',
+        #                    'm-.',
         #                    label='Ideal MHD Term')
 
     ls = [l1, l2, l3, l4]  #, l5]
