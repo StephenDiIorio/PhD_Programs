@@ -95,9 +95,10 @@ def main():
 
         term = const * np.divide(grad_num, denom, where=denom != 0)
 
+    limit = 10E10
 
     plt.figure()
-    plt.pcolormesh(term, cmap=cm.coolwarm)
+    plt.pcolormesh(term, cmap=cm.coolwarm, vmin=-limit, vmax=limit)
     cbar = plt.colorbar()
     plt.savefig('den.png')
 
