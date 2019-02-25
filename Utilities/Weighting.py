@@ -56,9 +56,9 @@ def first_order_weight_2d(x, y, dx, dy, p_values, values=None, weight=None):
         else:
             w = 1.0
 
-        weighted_grid[i, j]     += (1 - hx) * (1 - hy) * v * w
-        weighted_grid[i+1, j]   += (1 - hx) * hy       * v * w
-        weighted_grid[i, j+1]   += hx       * (1 - hy) * v * w
-        weighted_grid[i+1, j+1] += hx       * hy       * v * w
+        weighted_grid[i, j]     += (1 - hx) * (1 - hy) * v * w / dx / dy
+        weighted_grid[i+1, j]   += (1 - hx) * hy       * v * w / dx / dy
+        weighted_grid[i, j+1]   += hx       * (1 - hy) * v * w / dx / dy
+        weighted_grid[i+1, j+1] += hx       * hy       * v * w / dx / dy
 
     return weighted_grid
