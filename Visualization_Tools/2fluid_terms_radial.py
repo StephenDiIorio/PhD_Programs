@@ -238,7 +238,6 @@ def main():
         y_grid = e_var_y.grid_mid.data[1]
 
         e_avg, e_r, e_t = __radial_average(x_grid, y_grid, e_var_x.data, e_var_y.data)
-        e_avg = np.average(np.ma.masked_equal(e_avg, 0.), axis=1)
 
         temp_grid_x, temp_data_x = Temp_Field(sdfdata,
                                               x_axis_num,
@@ -247,19 +246,16 @@ def main():
                                               y_axis_num,
                                               species='Electron')
         temp_avg, temp_r, temp_t = __radial_average(x_grid, y_grid, temp_data_x, temp_data_y)
-        temp_avg = np.average(np.ma.masked_equal(temp_avg, 0.), axis=1)
 
         res_mhd_grid_x, res_mhd_data_x = Resistive_MHD_Field(sdfdata,
                                                              x_axis_num)
         res_mhd_grid_y, res_mhd_data_y = Resistive_MHD_Field(sdfdata,
                                                              y_axis_num)
         rmhd_avg, rmhd_r, rmhd_t = __radial_average(x_grid, y_grid, res_mhd_data_x, res_mhd_data_y)
-        rmhd_avg = np.average(np.ma.masked_equal(rmhd_avg, 0.), axis=1)
 
         hall_grid_x, hall_data_x = Hall_Field(sdfdata, x_axis_num)
         hall_grid_y, hall_data_y = Hall_Field(sdfdata, y_axis_num)
         hall_avg, hall_r, hall_t = __radial_average(x_grid, y_grid, hall_data_x, hall_data_y)
-        hall_avg = np.average(np.ma.masked_equal(hall_avg, 0.), axis=1)
 
         ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
                                                              x_axis_num,
@@ -268,7 +264,6 @@ def main():
                                                              y_axis_num,
                                                              species='Electron')
         imhd_avg, imhd_r, imhd_t = __radial_average(x_grid, y_grid, ideal_mhd_data_x, ideal_mhd_data_y)
-        imhd_avg = np.average(np.ma.masked_equal(imhd_avg, 0.), axis=1)
 
 
         l1, = axarr[i].plot(#e_r,
