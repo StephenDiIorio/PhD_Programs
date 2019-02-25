@@ -76,13 +76,28 @@ def main():
 
         w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
 
-        num_dens = first_order_weight_2d(x, y, dx, dy, p_list, weight=w)
-        real_num_dens = sdfdata.__dict__[get_varname("Derived_Number_Density", species)].data
+        f0 = first_order_weight_2d(x, y, dx, dy, p_list, weight=w)
 
-        d = np.subtract(num_dens, real_num_dens)
+        vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
+        vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
+        vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
+
+        vx_grid = first_order_weight_2d(x, y, dx, dy, p_list, values=vx, weight=w)
+        vy_grid = first_order_weight_2d(x, y, dx, dy, p_list, values=vy, weight=w)
+        vz_grid = first_order_weight_2d(x, y, dx, dy, p_list, values=vz, weight=w)
+
+        v_5 = np.power(np.add(np.add(np.power(vx_grid, 2), np.power(vy_grid, 2)), np.power(vz_grid, 2)), 2.5)
+        v_3 = np.power(np.add(np.add(np.power(vx_grid, 2), np.power(vy_grid, 2)), np.power(vz_grid, 2)), 1.5)
+
+        const = -sc.m_e / (6 * sc.e)
+        grad_num = np.gradient(np.multiply(f0, v_5), dx, dy)[1]  # y-component
+        denom = np.multiply(f0, v_3)
+
+        term = const * np.divide(grad_num, denom, where=denom != 0)
+
 
     plt.figure()
-    plt.pcolormesh(d, cmap=cm.coolwarm)
+    plt.pcolormesh(term, cmap=cm.coolwarm)
     cbar = plt.colorbar()
     plt.savefig('den.png')
 
