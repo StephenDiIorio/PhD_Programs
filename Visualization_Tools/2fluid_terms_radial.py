@@ -257,13 +257,13 @@ def main():
         hall_grid_y, hall_data_y = Hall_Field(sdfdata, y_axis_num)
         hall_avg, hall_r, hall_t = __radial_average(x_grid, y_grid, hall_data_x, hall_data_y)
 
-        ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
-                                                             x_axis_num,
-                                                             species='Electron')
-        ideal_mhd_grid_y, ideal_mhd_data_y = Ideal_MHD_Field(sdfdata,
-                                                             y_axis_num,
-                                                             species='Electron')
-        imhd_avg, imhd_r, imhd_t = __radial_average(x_grid, y_grid, ideal_mhd_data_x, ideal_mhd_data_y)
+        # ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
+        #                                                      x_axis_num,
+        #                                                      species='Electron')
+        # ideal_mhd_grid_y, ideal_mhd_data_y = Ideal_MHD_Field(sdfdata,
+        #                                                      y_axis_num,
+        #                                                      species='Electron')
+        # imhd_avg, imhd_r, imhd_t = __radial_average(x_grid, y_grid, ideal_mhd_data_x, ideal_mhd_data_y)
 
 
         l1, = axarr[i].plot(#e_r,
