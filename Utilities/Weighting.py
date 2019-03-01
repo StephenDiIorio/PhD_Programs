@@ -28,7 +28,9 @@ def first_order_weight_2d(x, y, dx, dy, p_values, values=None, weight=None):
         is the upper left corner
     """
 
-    weighted_grid = np.zeros((np.size(x), np.size(y)), dtype=np.float64)
+    x_size = np.size(x)
+    y_size = np.size(y)
+    weighted_grid = np.zeros((x_size, y_size), dtype=np.float64)
 
     # x_grid, y_grid = np.meshgrid(x, y)
 
@@ -40,11 +42,11 @@ def first_order_weight_2d(x, y, dx, dy, p_values, values=None, weight=None):
         y_pos = p[1]
 
         fi = (x_pos - x_min) / dx
-        i = int(np.floor(fi))
+        i  = int(np.floor(fi))
         hx = fi - i
 
         fj = (y_pos - y_min) / dy
-        j = int(np.floor(fj))
+        j  = int(np.floor(fj))
         hy = fj - j
 
         if values is not None:
@@ -56,9 +58,22 @@ def first_order_weight_2d(x, y, dx, dy, p_values, values=None, weight=None):
         else:
             w = 1.0
 
-        weighted_grid[i, j]     += (1 - hx) * (1 - hy) * v * w / dx / dy
-        weighted_grid[i+1, j]   += (1 - hx) * hy       * v * w / dx / dy
-        weighted_grid[i, j+1]   += hx       * (1 - hy) * v * w / dx / dy
-        weighted_grid[i+1, j+1] += hx       * hy       * v * w / dx / dy
+        if i >= 0 and i < x_size and \
+           j >= 0 and j < y_size:
+            weighted_grid[i, j] += (1 - hx) * (1 - hy) * v * w / dx / dy
+        if (i+1) >= 0 and (i+1) < x_size and \
+           j     >= 0 and j     < y_size:
+            weighted_grid[i+1, j] += (1 - hx) * hy * v * w / dx / dy
+        if i     >= 0 and i     < x_size and \
+           (j+1) >= 0 and (j+1) < y_size:
+            weighted_grid[i, j+1] += hx * (1 - hy) * v * w / dx / dy
+        if (i+1) >= 0 and (i+1) < x_size and \
+           (j+1) >= 0 and (j+1) < y_size:
+            weighted_grid[i+1, j+1] += hx * hy * v * w / dx / dy
+
+        # weighted_grid[i, j] += (1 - hx) * (1 - hy) * v * w / dx / dy
+        # weighted_grid[i+1, j] += (1 - hx) * hy * v * w / dx / dy
+        # weighted_grid[i, j+1] += hx * (1 - hy) * v * w / dx / dy
+        # weighted_grid[i+1, j+1] += hx * hy * v * w / dx / dy
 
     return weighted_grid
