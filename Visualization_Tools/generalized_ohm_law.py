@@ -40,7 +40,7 @@ def main():
     species = "Electron"
 
     path = "/scratch/lsa_flux/diiorios/2d_run/"
-    fnums = ["0200"]
+    fnums = ["0100"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
@@ -62,6 +62,7 @@ def main():
         print(sdfdata.Header['time'])
 
         grid = sdfdata.__dict__["Grid_Grid_mid"].data
+        # grid = sdfdata.__dict__["Grid_Grid"].data
 
         x = grid[0]
         y = grid[1]
@@ -70,35 +71,34 @@ def main():
         dy = grid[1][1] - grid[1][0]
 
         p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
-        p_list = list(zip(p_pos[0], p_pos[1]))
-
-        p_list[:] = [p for p in p_list if in_domain(p, x, y)]
-
-        w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
-
-        f0 = first_order_weight_2d(x, y, dx, dy, p_list, weight=w)
-
         vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
         vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
         vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
+        w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
 
-        vx_grid = first_order_weight_2d(x, y, dx, dy, p_list, values=vx, weight=w)
-        vy_grid = first_order_weight_2d(x, y, dx, dy, p_list, values=vy, weight=w)
-        vz_grid = first_order_weight_2d(x, y, dx, dy, p_list, values=vz, weight=w)
+        v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
+        v_5 = (np.sqrt(vx**2 + vy**2 + vz**2))**5
 
-        v_5 = np.power(np.add(np.add(np.power(vx_grid, 2), np.power(vy_grid, 2)), np.power(vz_grid, 2)), 2.5)
-        v_3 = np.power(np.add(np.add(np.power(vx_grid, 2), np.power(vy_grid, 2)), np.power(vz_grid, 2)), 1.5)
+        p_list = list(zip(p_pos[0], p_pos[1]))
+        # p_list = list(zip(p_pos[0], p_pos[1], w, vx, vy, vz))  # pack everything together so we remove all the right values
+
+        # p_list[:] = [p for p in p_list if in_domain(p, x, y)]
+
+        # x_pos, y_pos, w, vx, vy, vz = zip(*p_list)
+        # p_list = list(zip(x_pos, y_pos))
+
+        v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
+        v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
 
         const = -sc.m_e / (6 * sc.e)
-        grad_num = np.gradient(np.multiply(f0, v_5), dx, dy)[1]  # y-component
-        denom = np.multiply(f0, v_3)
+        grad_num = np.gradient(v_5_dist, dx, dy)[1]  # y-component
 
-        term = const * np.divide(grad_num, denom, where=denom != 0)
+        term = const * np.divide(grad_num, v_3_dist, where=v_3_dist != 0)
 
-    limit = 10E10
+    # limit = 10E10
 
     plt.figure()
-    plt.pcolormesh(term, cmap=cm.coolwarm, vmin=-limit, vmax=limit)
+    plt.pcolormesh(term, cmap=cm.coolwarm)#, vmin=-limit, vmax=limit)
     cbar = plt.colorbar()
     plt.savefig('den.png')
 
