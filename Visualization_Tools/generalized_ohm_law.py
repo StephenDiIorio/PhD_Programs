@@ -87,13 +87,16 @@ def main():
         # x_pos, y_pos, w, vx, vy, vz = zip(*p_list)
         # p_list = list(zip(x_pos, y_pos))
 
+        ne = first_order_weight_2d(x, y, dx, dy, p_list, weight=w)
         v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
+        v_3_dist = np.divide(v_3_dist, ne, where=ne!=0.0)
         v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
+        v_5_dist = np.divide(v_5_dist, ne, where=ne!=0.0)
 
         const = -sc.m_e / (6 * sc.e)
         grad_num = np.gradient(v_5_dist, dx, dy)[1]  # y-component
 
-        term = const * np.divide(grad_num, v_3_dist, where=v_3_dist != 0)
+        term = const * np.divide(grad_num, v_3_dist, where=v_3_dist!=0.0)
 
     # limit = 10E10
 
