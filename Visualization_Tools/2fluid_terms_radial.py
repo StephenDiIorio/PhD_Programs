@@ -190,6 +190,46 @@ def Resistive_MHD_Field(sdfdata, axis):
                                          where=e_num_dens.data != 0.0))
 
 
+def Generalized_Ohm(sdfdata, axis, species=None):
+    grid = sdfdata.__dict__["Grid_Grid_mid"].data
+    # grid = sdfdata.__dict__["Grid_Grid"].data
+
+    x = grid[0]
+    y = grid[1]
+
+    dx = grid[0][1] - grid[0][0]
+    dy = grid[1][1] - grid[1][0]
+
+    p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
+    vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
+    vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
+    vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
+    w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
+
+    v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
+    v_5 = (np.sqrt(vx**2 + vy**2 + vz**2))**5
+
+    p_list = list(zip(p_pos[0], p_pos[1]))
+    # p_list = list(zip(p_pos[0], p_pos[1], w, vx, vy, vz))  # pack everything together so we remove all the right values
+
+    # p_list[:] = [p for p in p_list if in_domain(p, x, y)]
+
+    # x_pos, y_pos, w, vx, vy, vz = zip(*p_list)
+    # p_list = list(zip(x_pos, y_pos))
+
+    v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
+    # v_3_dist = np.divide(v_3_dist, ne, where=ne!=0.0)
+    v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
+    # v_5_dist = np.divide(v_5_dist, ne, where=ne!=0.0)
+
+    const = -sc.m_e / (6 * sc.e)
+    grad_num = np.gradient(v_5_dist, dx, dy)[axis]
+    # grad_num_y = np.gradient(v_5_dist, dx, dy)[1]
+
+    return const * np.divide(grad_num, v_3_dist, where=v_3_dist!=0.0)
+    # term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
+
+
 def __radial_average(x_grid, y_grid, field_x, field_y):
     X, Y = np.meshgrid(x_grid, y_grid)
     R, T = cart2polar(X, Y)
@@ -257,6 +297,14 @@ def main():
         hall_grid_y, hall_data_y = Hall_Field(sdfdata, y_axis_num)
         hall_avg, hall_r, hall_t = __radial_average(x_grid, y_grid, hall_data_x, hall_data_y)
 
+        gen_data_x = Generalized_Ohm(sdfdata,
+                                     x_axis_num,
+                                     species='Electron')
+        gen_data_y = Generalized_Ohm(sdfdata,
+                                     y_axis_num,
+                                     species='Electron')
+        gen_avg, gen_r, gen_t = __radial_average(x_grid, y_grid, gen_data_x, gen_data_y)
+
         # ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
         #                                                      x_axis_num,
         #                                                      species='Electron')
@@ -290,8 +338,13 @@ def main():
         #                            -limit, limit),
         #                    'm-.',
         #                    label='Ideal MHD Term')
+        l6, = axarr[i].plot(#imhd_r,
+                            np.clip(gen_avg,
+                                   -limit, limit),
+                            'm-.',
+                            label='Generalized Ohm')
 
-    ls = [l1, l2, l3, l4]  #, l5]
+    ls = [l1, l2, l3, l4, l6]  #, l5]
     labels = [l.get_label() for l in ls]
     lgd = fig.legend(ls, labels, bbox_to_anchor=(1.05, 1.0), loc=1)
     fig.subplots_adjust(hspace=0)
