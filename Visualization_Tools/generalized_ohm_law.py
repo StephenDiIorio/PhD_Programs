@@ -40,14 +40,14 @@ def main():
     species = "Electron"
 
     path = "/scratch/lsa_flux/diiorios/2d_run/"
-    fnums = ["0100"]
+    fnums = ["0150"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
 
-    # x_axis_num = 0
+    x_axis_num = 0
     y_axis_num = 1
-    # z_axis_num = 2
+    z_axis_num = 2
 
     fig, axarr = plt.subplots(len(fname), sharex=True, sharey=True)
     # only have a single file to plot, so we so this little hack since
@@ -87,21 +87,22 @@ def main():
         # x_pos, y_pos, w, vx, vy, vz = zip(*p_list)
         # p_list = list(zip(x_pos, y_pos))
 
-        ne = first_order_weight_2d(x, y, dx, dy, p_list, weight=w)
         v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
-        v_3_dist = np.divide(v_3_dist, ne, where=ne!=0.0)
+        # v_3_dist = np.divide(v_3_dist, ne, where=ne!=0.0)
         v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
-        v_5_dist = np.divide(v_5_dist, ne, where=ne!=0.0)
+        # v_5_dist = np.divide(v_5_dist, ne, where=ne!=0.0)
 
         const = -sc.m_e / (6 * sc.e)
-        grad_num = np.gradient(v_5_dist, dx, dy)[1]  # y-component
+        grad_num_x = np.gradient(v_5_dist, dx, dy)[0]
+        grad_num_y = np.gradient(v_5_dist, dx, dy)[1]
 
-        term = const * np.divide(grad_num, v_3_dist, where=v_3_dist!=0.0)
+        term_x = const * np.divide(grad_num_x, v_3_dist, where=v_3_dist!=0.0)
+        term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
 
-    # limit = 10E10
+    limit = 1E10
 
     plt.figure()
-    plt.pcolormesh(term, cmap=cm.coolwarm)#, vmin=-limit, vmax=limit)
+    plt.pcolormesh(term_y, cmap=cm.coolwarm, vmin=-limit, vmax=limit)
     cbar = plt.colorbar()
     plt.savefig('den.png')
 
