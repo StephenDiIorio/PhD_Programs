@@ -337,8 +337,8 @@ def main():
                                      species='Electron')
         gen_avg, gen_r, gen_t = __radial_average(x_grid, y_grid, gen_data_x, gen_data_y)
 
-        gen_avg2, gen_r2, gen_t2 = Generalized_Ohm_radavg(sdfdata,
-                                                          species='Electron')
+        gen_avg2 = Generalized_Ohm_radavg(sdfdata,
+                                          species='Electron')
 
         # ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
         #                                                      x_axis_num,
