@@ -299,7 +299,7 @@ def main():
     # axarr[0].set_title(species + " files " + str(fnums))
     axarr[0].set_title('Contribution to E Field')
 
-    limit = 5E9
+    limit = 7E9
 
     for i in range(len(fname)):
         sdfdata = sdf.read(fname[i])
@@ -373,7 +373,7 @@ def main():
         l6, = axarr[i].plot(np.clip(gen_avg, -limit, limit),
                             'm-.',
                             label='Generalized Ohm',
-                            alpha=0.5)
+                            alpha=0.2)
         l7, = axarr[i].plot(np.clip(gen_avg2, -limit, limit),
                             'c-.',
                             label='Gen Ohm Avg 1st')
