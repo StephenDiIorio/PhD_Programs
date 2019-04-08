@@ -246,6 +246,16 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
     v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
 
+    fig3, ax3 = plt.figure(3)
+    im3 = ax3.pcolormesh(v_3_dist,  cmap=cm.coolwarm,  vmin=-8e8, vmax=8e8)
+    cb = fig3.colorbar(im3)
+    plt.savefig('v3.png', dpi=600, bbox_inches="tight")
+
+    fig4, ax4 = plt.figure(4)
+    im4 = ax4.pcolormesh(v_5_dist,  cmap=cm.coolwarm,  vmin=-8e8, vmax=8e8)
+    cb = fig4.colorbar(im4)
+    plt.savefig('v5.png', dpi=600, bbox_inches="tight")
+
     avg_3, r, t = reproject_image_into_polar(v_3_dist, origin=None, Jacobian=False, dr=1, dt=None)
     o_ma = np.ma.masked_equal(avg_3, 0.)
     avg_3 = np.average(o_ma, axis=1)
@@ -275,6 +285,33 @@ def __radial_average(x_grid, y_grid, field_x, field_y):
     avg = np.average(o_ma, axis=1)
 
     return avg, R, T
+
+
+# def higher_order(sdfdata, species=None):
+#     grid = sdfdata.__dict__["Grid_Grid_mid"].data
+#     # grid = sdfdata.__dict__["Grid_Grid"].data
+
+#     x = grid[0]
+#     y = grid[1]
+
+#     dx = grid[0][1] - grid[0][0]
+#     dy = grid[1][1] - grid[1][0]
+
+#     p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
+#     vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
+#     vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
+#     vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
+#     w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
+
+#     v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
+
+#     p_list = list(zip(p_pos[0], p_pos[1]))
+
+
+#     term_xx = np.multiply(vx, np.multiply(vx, v_3))
+#     term_xy = np.multiply(vy, np.multiply(vx, v_3))
+
+#     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
 
 
 def main():
