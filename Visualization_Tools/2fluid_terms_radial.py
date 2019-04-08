@@ -115,8 +115,6 @@ def __map_particle_to_grid(sdfdata, p_var_name, species=None):
     p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
     p_list = list(zip(p_pos[0], p_pos[1]))
 
-    p_list[:] = [p for p in p_list if __in_domain(p, x, y)]
-
     w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
 
     p_var = sdfdata.__dict__[p_var_name].data
@@ -210,23 +208,57 @@ def Generalized_Ohm(sdfdata, axis, species=None):
     v_5 = (np.sqrt(vx**2 + vy**2 + vz**2))**5
 
     p_list = list(zip(p_pos[0], p_pos[1]))
-    # p_list = list(zip(p_pos[0], p_pos[1], w, vx, vy, vz))  # pack everything together so we remove all the right values
 
-    # p_list[:] = [p for p in p_list if in_domain(p, x, y)]
-
-    # x_pos, y_pos, w, vx, vy, vz = zip(*p_list)
-    # p_list = list(zip(x_pos, y_pos))
 
     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
-    # v_3_dist = np.divide(v_3_dist, ne, where=ne!=0.0)
     v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
-    # v_5_dist = np.divide(v_5_dist, ne, where=ne!=0.0)
 
     const = -sc.m_e / (6 * sc.e)
     grad_num = np.gradient(v_5_dist, dx, dy)[axis]
     # grad_num_y = np.gradient(v_5_dist, dx, dy)[1]
 
     return const * np.divide(grad_num, v_3_dist, where=v_3_dist!=0.0)
+    # term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
+
+
+def Generalized_Ohm_radavg(sdfdata, species=None):
+    grid = sdfdata.__dict__["Grid_Grid_mid"].data
+    # grid = sdfdata.__dict__["Grid_Grid"].data
+
+    x = grid[0]
+    y = grid[1]
+
+    dx = grid[0][1] - grid[0][0]
+    dy = grid[1][1] - grid[1][0]
+
+    p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
+    vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
+    vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
+    vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
+    w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
+
+    v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
+    v_5 = (np.sqrt(vx**2 + vy**2 + vz**2))**5
+
+    p_list = list(zip(p_pos[0], p_pos[1]))
+
+
+    v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
+    v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
+
+    avg_3, r, t = reproject_image_into_polar(v_3_dist, origin=None, Jacobian=False, dr=1, dt=None)
+    o_ma = np.ma.masked_equal(avg_3, 0.)
+    avg_3 = np.average(o_ma, axis=1)
+
+    avg_5, r, t = reproject_image_into_polar(v_5_dist, origin=None, Jacobian=False, dr=1, dt=None)
+    o_ma = np.ma.masked_equal(avg_5, 0.)
+    avg_5 = np.average(o_ma, axis=1)
+
+    const = -sc.m_e / (6 * sc.e)
+    grad_num = np.gradient(avg_5)
+    # grad_num_y = np.gradient(v_5_dist, dx, dy)[1]
+
+    return const * np.divide(grad_num, avg_3, where=avg_3!=0.0)
     # term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
 
 
@@ -248,7 +280,7 @@ def __radial_average(x_grid, y_grid, field_x, field_y):
 def main():
     species = "Electron"
     path = "/scratch/lsa_flux/diiorios/2d_run/"
-    fnums = ["0300", "0350", "0400"]
+    fnums = ["0100", "0200", "0400"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
@@ -305,6 +337,9 @@ def main():
                                      species='Electron')
         gen_avg, gen_r, gen_t = __radial_average(x_grid, y_grid, gen_data_x, gen_data_y)
 
+        gen_avg2, gen_r2, gen_t2 = Generalized_Ohm_radavg(sdfdata,
+                                                          species='Electron')
+
         # ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
         #                                                      x_axis_num,
         #                                                      species='Electron')
@@ -319,18 +354,15 @@ def main():
                             'k-',
                             label='Simulation')
         l2, = axarr[i].plot(#temp_r,
-                            np.clip(temp_avg,
-                                    -limit, limit),
+                            np.clip(temp_avg, -limit, limit),
                             'r--',
                             label='Thermal')
         l3, = axarr[i].plot(#rmhd_r,
-                            np.clip(rmhd_avg,
-                                    -limit, limit),
+                            np.clip(rmhd_avg, -limit, limit),
                             'b-.',
                             label='Resistive MHD')
         l4, = axarr[i].plot(#hall_r,
-                            np.clip(hall_avg,
-                                    -limit, limit),
+                            np.clip(hall_avg, -limit, limit),
                             'g:',
                             label='Hall Term')
         # l5, = axarr[i].plot(#imhd_r,
@@ -338,13 +370,14 @@ def main():
         #                            -limit, limit),
         #                    'm-.',
         #                    label='Ideal MHD Term')
-        l6, = axarr[i].plot(#imhd_r,
-                            np.clip(gen_avg,
-                                   -limit, limit),
+        l6, = axarr[i].plot(np.clip(gen_avg, -limit, limit),
                             'm-.',
                             label='Generalized Ohm')
+        l7, = axarr[i].plot(np.clip(gen_avg2, -limit, limit),
+                            'c-.',
+                            label='Gen Ohm Avg 1st')
 
-    ls = [l1, l2, l3, l4, l6]  #, l5]
+    ls = [l1, l2, l3, l4, l6, l7]  #, l5]
     labels = [l.get_label() for l in ls]
     lgd = fig.legend(ls, labels, bbox_to_anchor=(1.05, 1.0), loc=1)
     fig.subplots_adjust(hspace=0)
