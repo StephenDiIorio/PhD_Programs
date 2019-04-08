@@ -357,14 +357,14 @@ def main():
                             np.clip(temp_avg, -limit, limit),
                             'r--',
                             label='Thermal')
-        l3, = axarr[i].plot(#rmhd_r,
-                            np.clip(rmhd_avg, -limit, limit),
-                            'b-.',
-                            label='Resistive MHD')
-        l4, = axarr[i].plot(#hall_r,
-                            np.clip(hall_avg, -limit, limit),
-                            'g:',
-                            label='Hall Term')
+        # l3, = axarr[i].plot(#rmhd_r,
+        #                     np.clip(rmhd_avg, -limit, limit),
+        #                     'b-.',
+        #                     label='Resistive MHD')
+        # l4, = axarr[i].plot(#hall_r,
+        #                     np.clip(hall_avg, -limit, limit),
+        #                     'g:',
+        #                     label='Hall Term')
         # l5, = axarr[i].plot(#imhd_r,
         #                    np.clip(imhd_avg,
         #                            -limit, limit),
@@ -372,12 +372,13 @@ def main():
         #                    label='Ideal MHD Term')
         l6, = axarr[i].plot(np.clip(gen_avg, -limit, limit),
                             'm-.',
-                            label='Generalized Ohm')
+                            label='Generalized Ohm',
+                            alpha=0.5)
         l7, = axarr[i].plot(np.clip(gen_avg2, -limit, limit),
                             'c-.',
                             label='Gen Ohm Avg 1st')
 
-    ls = [l1, l2, l3, l4, l6, l7]  #, l5]
+    ls = [l1, l2, l6, l7]  #l3, l4, l5]
     labels = [l.get_label() for l in ls]
     lgd = fig.legend(ls, labels, bbox_to_anchor=(1.05, 1.0), loc=1)
     fig.subplots_adjust(hspace=0)
