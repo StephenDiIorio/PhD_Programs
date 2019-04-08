@@ -7,6 +7,7 @@ import sys
 package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
 sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
 
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants as sc
@@ -248,7 +249,7 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
 
     ax = plt.subplot(1, 2, 1)
     im = ax.pcolormesh(v_3_dist,  cmap=cm.coolwarm,  vmin=-8e8, vmax=8e8)
-    cb = plt.colorbar(im)
+    # cb = plt.colorbar(im)
     plt.savefig('v3.png', dpi=600, bbox_inches="tight")
 
     ax = plt.subplot(1, 2, 2)
