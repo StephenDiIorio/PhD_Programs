@@ -255,7 +255,7 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
     avg_5 = np.average(o_ma, axis=1)
 
     const = -sc.m_e / (6 * sc.e)
-    grad_num = np.gradient(avg_5)
+    grad_num = np.gradient(avg_5, dx)
     # grad_num_y = np.gradient(v_5_dist, dx, dy)[1]
 
     return const * np.divide(grad_num, avg_3, where=avg_3!=0.0)
