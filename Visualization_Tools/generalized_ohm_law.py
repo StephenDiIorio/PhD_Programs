@@ -40,7 +40,7 @@ def main():
     species = "Electron"
 
     path = "/scratch/lsa_flux/diiorios/2d_run/"
-    fnums = ["0150"]
+    fnums = ["0100"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
@@ -99,10 +99,10 @@ def main():
         term_x = const * np.divide(grad_num_x, v_3_dist, where=v_3_dist!=0.0)
         term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
 
-    limit = 1E10
+    # limit = 1E10
 
     plt.figure()
-    plt.pcolormesh(term_y, cmap=cm.coolwarm, vmin=-limit, vmax=limit)
+    plt.pcolormesh(v_5_dist, cmap=cm.coolwarm)#, vmin=-limit, vmax=limit)
     cbar = plt.colorbar()
     plt.savefig('den.png')
 
