@@ -223,8 +223,8 @@ def Generalized_Ohm(sdfdata, axis, species=None):
 
 
 def Generalized_Ohm_radavg(sdfdata, species=None):
-    grid = sdfdata.__dict__["Grid_Grid_mid"].data
-    # grid = sdfdata.__dict__["Grid_Grid"].data
+    # grid = sdfdata.__dict__["Grid_Grid_mid"].data
+    grid = sdfdata.__dict__["Grid_Grid"].data
 
     x = grid[0]
     y = grid[1]
@@ -248,13 +248,11 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
     v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
 
     ax = plt.subplot(1, 2, 1)
-    im = ax.pcolormesh(v_3_dist,  cmap=cm.coolwarm)#,  vmin=-8e8, vmax=8e8)
-    # cb = plt.colorbar(im)
-    # plt.savefig('v3.png', dpi=600, bbox_inches="tight")
+    im = ax.pcolormesh(v_3_dist, cmap=cm.coolwarm, vmin=-1e50, vmax=1e50)
 
     ax = plt.subplot(1, 2, 2)
-    im = ax.pcolormesh(v_5_dist,  cmap=cm.coolwarm)#,  vmin=-8e8, vmax=8e8)
-    # cb = plt.colorbar(im)
+    im = ax.pcolormesh(v_5_dist,  cmap=cm.coolwarm, vmin=-1e50, vmax=1e50)
+
     plt.savefig('v5.png', dpi=600, bbox_inches="tight")
 
     avg_3, r, t = reproject_image_into_polar(v_3_dist, origin=None, Jacobian=False, dr=1, dt=None)
@@ -267,7 +265,6 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
 
     const = -sc.m_e / (6 * sc.e)
     grad_num = np.gradient(avg_5, dx)
-    # grad_num_y = np.gradient(v_5_dist, dx, dy)[1]
 
     return const * np.divide(grad_num, avg_3, where=avg_3!=0.0)
     # term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
@@ -288,31 +285,31 @@ def __radial_average(x_grid, y_grid, field_x, field_y):
     return avg, R, T
 
 
-# def higher_order(sdfdata, species=None):
-#     grid = sdfdata.__dict__["Grid_Grid_mid"].data
-#     # grid = sdfdata.__dict__["Grid_Grid"].data
+def higher_order(sdfdata, species=None):
+    grid = sdfdata.__dict__["Grid_Grid_mid"].data
+    # grid = sdfdata.__dict__["Grid_Grid"].data
 
-#     x = grid[0]
-#     y = grid[1]
+    x = grid[0]
+    y = grid[1]
 
-#     dx = grid[0][1] - grid[0][0]
-#     dy = grid[1][1] - grid[1][0]
+    dx = grid[0][1] - grid[0][0]
+    dy = grid[1][1] - grid[1][0]
 
-#     p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
-#     vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
-#     vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
-#     vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
-#     w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
+    p_pos = sdfdata.__dict__[get_varname("Grid_Particles", species)].data
+    vx = sdfdata.__dict__[get_varname("Particles_Vx", species)].data
+    vy = sdfdata.__dict__[get_varname("Particles_Vy", species)].data
+    vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
+    w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
 
-#     v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
+    v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
 
-#     p_list = list(zip(p_pos[0], p_pos[1]))
+    p_list = list(zip(p_pos[0], p_pos[1]))
 
 
-#     term_xx = np.multiply(vx, np.multiply(vx, v_3))
-#     term_xy = np.multiply(vy, np.multiply(vx, v_3))
+    term_xx = np.multiply(vx, np.multiply(vx, v_3))
+    term_xy = np.multiply(vy, np.multiply(vx, v_3))
 
-#     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
+    v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
 
 
 def main():
