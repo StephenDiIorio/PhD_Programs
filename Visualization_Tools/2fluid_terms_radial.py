@@ -248,10 +248,10 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
     v_5_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_5)
 
     ax = plt.subplot(1, 2, 1)
-    im = ax.pcolormesh(v_3_dist, cmap=cm.coolwarm, vmin=-1e50, vmax=1e50)
+    im = ax.pcolormesh(v_3_dist, cmap=cm.coolwarm)
 
     ax = plt.subplot(1, 2, 2)
-    im = ax.pcolormesh(v_5_dist,  cmap=cm.coolwarm, vmin=-1e50, vmax=1e50)
+    im = ax.pcolormesh(v_5_dist,  cmap=cm.coolwarm)
 
     plt.savefig('v5.png', dpi=600, bbox_inches="tight")
 
