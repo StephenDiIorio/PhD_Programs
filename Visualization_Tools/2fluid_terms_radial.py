@@ -371,8 +371,10 @@ def main():
 
         e_var_x = sdfdata.Electric_Field_Ex
         e_var_y = sdfdata.Electric_Field_Ey
-        x_grid = e_var_x.grid_mid.data[0]
-        y_grid = e_var_y.grid_mid.data[1]
+        # x_grid = e_var_x.grid_mid.data[0]
+        # y_grid = e_var_y.grid_mid.data[1]
+        x_grid = e_var_x.grid.data[0]
+        y_grid = e_var_y.grid.data[1]
 
         e_avg, e_r, e_t = __radial_average(x_grid, y_grid, e_var_x.data, e_var_y.data)
 
