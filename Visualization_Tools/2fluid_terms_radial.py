@@ -405,6 +405,8 @@ def main():
         gen_avg2 = Generalized_Ohm_radavg(sdfdata,
                                           species='Electron')
 
+        high_order = higher_order(sdfdata, species='Electron')
+
         # ideal_mhd_grid_x, ideal_mhd_data_x = Ideal_MHD_Field(sdfdata,
         #                                                      x_axis_num,
         #                                                      species='Electron')
@@ -442,8 +444,11 @@ def main():
         l7, = axarr[i].plot(np.clip(gen_avg2, -limit, limit),
                             'c-.',
                             label='Gen Ohm Avg 1st')
+        l8, = axarr[i].plot(np.clip(high_order, -limit, limit),
+                            'g:',
+                            label='Higher Order')
 
-    ls = [l1, l2, l6, l7]  #l3, l4, l5]
+    ls = [l1, l2, l6, l7, l8]  #l3, l4, l5]
     labels = [l.get_label() for l in ls]
     lgd = fig.legend(ls, labels, bbox_to_anchor=(1.05, 1.0), loc=1)
     fig.subplots_adjust(hspace=0)
