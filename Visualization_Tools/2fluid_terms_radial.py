@@ -190,8 +190,8 @@ def Resistive_MHD_Field(sdfdata, axis):
 
 
 def Generalized_Ohm(sdfdata, axis, species=None):
-    grid = sdfdata.__dict__["Grid_Grid_mid"].data
-    # grid = sdfdata.__dict__["Grid_Grid"].data
+    # grid = sdfdata.__dict__["Grid_Grid_mid"].data
+    grid = sdfdata.__dict__["Grid_Grid"].data
 
     x = grid[0]
     y = grid[1]
@@ -264,7 +264,7 @@ def Generalized_Ohm_radavg(sdfdata, species=None):
     avg_5 = np.average(o_ma, axis=1)
 
     const = -sc.m_e / (6 * sc.e)
-    grad_num = np.gradient(avg_5, dx)
+    grad_num = np.gradient(avg_5, dx) #TODO: what to use for grid spacing radially
 
     return const * np.divide(grad_num, avg_3, where=avg_3!=0.0)
     # term_y = const * np.divide(grad_num_y, v_3_dist, where=v_3_dist!=0.0)
@@ -286,8 +286,8 @@ def __radial_average(x_grid, y_grid, field_x, field_y):
 
 
 def higher_order(sdfdata, species=None):
-    grid = sdfdata.__dict__["Grid_Grid_mid"].data
-    # grid = sdfdata.__dict__["Grid_Grid"].data
+    # grid = sdfdata.__dict__["Grid_Grid_mid"].data
+    grid = sdfdata.__dict__["Grid_Grid"].data
 
     x = grid[0]
     y = grid[1]
@@ -301,15 +301,45 @@ def higher_order(sdfdata, species=None):
     vz = sdfdata.__dict__[get_varname("Particles_Vz", species)].data
     w = sdfdata.__dict__[get_varname("Particles_Weight", species)].data
 
-    v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
-
     p_list = list(zip(p_pos[0], p_pos[1]))
 
 
-    term_xx = np.multiply(vx, np.multiply(vx, v_3))
-    term_xy = np.multiply(vy, np.multiply(vx, v_3))
+    v_r = np.sqrt(vx**2 + vy**2 + vz**2) #NOTE: might need to get rid of vz. can then use cart2polar for v_r and v_t
+    v_r_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_r)
+    avg_r, r, t = reproject_image_into_polar(v_r_dist, origin=None, Jacobian=False, dr=1, dt=None)
+    o_ma = np.ma.masked_equal(avg_r, 0.)
+    avg_r = np.average(o_ma, axis=1)
 
+    v_t = np.arctan2(vx, vy)
+    v_t_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_t)
+    avg_t, r, t = reproject_image_into_polar(v_t_dist, origin=None, Jacobian=False, dr=1, dt=None)
+    o_ma = np.ma.masked_equal(avg_t, 0.)
+    avg_t = np.average(o_ma, axis=1)
+
+    v_3 = (v_r)**3
     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
+    avg_3, r, t = reproject_image_into_polar(v_3_dist, origin=None, Jacobian=False, dr=1, dt=None)
+    o_ma = np.ma.masked_equal(avg_3, 0.)
+    avg_3 = np.average(o_ma, axis=1)
+
+
+    r = np.linspace(0.0, np.max(np.sqrt(x**2 + y**2)), num=v_r.size)
+    print(r)
+
+    num_1 = np.multiply(r, avg_3)
+    num_1 = np.multiply(avg_r, num_1)
+    num_1 = np.multiply(avg_r, num_1)
+    num_1 = np.gradient(num_1, dx) #TODO: what to use for grid spacing radially
+
+    num_2 = np.multiply(avg_r, avg_t)
+    num_2 = np.multiply(avg_3, num_2)
+    num_2 = np.gradient(num_2, max(x.size, y.size)) #TODO: what to use for grid spacing theta
+
+    num = np.divide(num_1 + num_2, r, where=r!=0.0)
+
+    const = -sc.m_e / (2 * sc.e)
+
+    return const * np.divide(num, avg_3, where=avg_3!=0.0)
 
 
 def main():
