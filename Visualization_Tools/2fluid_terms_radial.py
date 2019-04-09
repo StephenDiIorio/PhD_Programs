@@ -335,7 +335,8 @@ def higher_order(sdfdata, species=None):
     num_2 = np.multiply(avg_3, num_2)
     num_2 = np.gradient(num_2, max(x.size, y.size)) #TODO: what to use for grid spacing theta
 
-    num = np.divide(num_1 + num_2, r, where=r!=0.0)
+    # num = np.divide(num_1 + num_2, r, where=r!=0.0)
+    num = np.divide(num_1, r, where=r!=0.0)
 
     const = -sc.m_e / (2 * sc.e)
 
