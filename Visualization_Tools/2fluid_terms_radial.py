@@ -309,18 +309,30 @@ def higher_order(sdfdata, species=None):
     avg_r, r, t = reproject_image_into_polar(v_r_dist, origin=None, Jacobian=False, dr=1, dt=None)
     o_ma = np.ma.masked_equal(avg_r, 0.)
     avg_r = np.average(o_ma, axis=1)
+    plt.figure(3)
+    plt.plot(avg_r)
+    plt.colorbar()
+    plt.savefig('vr.png', dpi=600, bbox_inches="tight")
 
     v_t = np.arctan2(vx, vy)
     v_t_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_t)
     avg_t, r, t = reproject_image_into_polar(v_t_dist, origin=None, Jacobian=False, dr=1, dt=None)
     o_ma = np.ma.masked_equal(avg_t, 0.)
     avg_t = np.average(o_ma, axis=1)
+    plt.figure(4)
+    plt.plot(avg_t)
+    plt.colorbar()
+    plt.savefig('vt.png', dpi=600, bbox_inches="tight")
 
     v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
     avg_3, r, t = reproject_image_into_polar(v_3_dist, origin=None, Jacobian=False, dr=1, dt=None)
     o_ma = np.ma.masked_equal(avg_3, 0.)
     avg_3 = np.average(o_ma, axis=1)
+    plt.figure(5)
+    plt.plot(avg_3)
+    plt.colorbar()
+    plt.savefig('v3.png', dpi=600, bbox_inches="tight")
 
 
     r = np.linspace(0.0, np.max(np.sqrt(x**2 + y**2)), num=avg_r.size)
@@ -330,10 +342,18 @@ def higher_order(sdfdata, species=None):
     num_1 = np.multiply(avg_r, num_1)
     num_1 = np.multiply(avg_r, num_1)
     num_1 = np.gradient(num_1, dx) #TODO: what to use for grid spacing radially
+    plt.figure(6)
+    plt.plot(num_1)
+    plt.colorbar()
+    plt.savefig('num1.png', dpi=600, bbox_inches="tight")
 
     num_2 = np.multiply(avg_r, avg_t)
     num_2 = np.multiply(avg_3, num_2)
     num_2 = np.gradient(num_2, max(x.size, y.size)) #TODO: what to use for grid spacing theta
+    plt.figure(7)
+    plt.plot(num_2)
+    plt.colorbar()
+    plt.savefig('num2.png', dpi=600, bbox_inches="tight")
 
     # num = np.divide(num_1 + num_2, r, where=r!=0.0)
     num = np.divide(num_1, r, where=r!=0.0)
