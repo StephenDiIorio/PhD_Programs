@@ -304,7 +304,7 @@ def higher_order(sdfdata, species=None):
     p_list = list(zip(p_pos[0], p_pos[1]))
 
 
-    v_r = np.sqrt(vx**2 + vy**2 + vz**2) #NOTE: might need to get rid of vz. can then use cart2polar for v_r and v_t
+    v_r = np.sqrt(vx**2 + vy**2)# + vz**2) #NOTE: might need to get rid of vz. can then use cart2polar for v_r and v_t
     v_r_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_r)
     avg_r, r, t = reproject_image_into_polar(v_r_dist, origin=None, Jacobian=False, dr=1, dt=None)
     o_ma = np.ma.masked_equal(avg_r, 0.)
@@ -316,7 +316,7 @@ def higher_order(sdfdata, species=None):
     o_ma = np.ma.masked_equal(avg_t, 0.)
     avg_t = np.average(o_ma, axis=1)
 
-    v_3 = (v_r)**3
+    v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
     avg_3, r, t = reproject_image_into_polar(v_3_dist, origin=None, Jacobian=False, dr=1, dt=None)
     o_ma = np.ma.masked_equal(avg_3, 0.)
