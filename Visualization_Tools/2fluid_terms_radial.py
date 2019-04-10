@@ -352,10 +352,17 @@ def higher_order(sdfdata, species=None):
 
     # num = np.divide(num_1 + num_2, r, where=r!=0.0)
     num = np.divide(num_1, r, where=r!=0.0)
+    fig6, ax6 = plt.subplots()
+    ax6.plot(num)
+    fig6.savefig('num.png', dpi=600, bbox_inches="tight")
 
     const = -sc.m_e / (2 * sc.e)
+    final = const * np.divide(num, avg_3, where=avg_3!=0.0)
+    fig7, ax7 = plt.subplots()
+    ax7.plot(final)
+    fig7.savefig('final.png', dpi=600, bbox_inches="tight")
 
-    return const * np.divide(num, avg_3, where=avg_3!=0.0)
+    return final#const * np.divide(num, avg_3, where=avg_3!=0.0)
 
 
 def main():
