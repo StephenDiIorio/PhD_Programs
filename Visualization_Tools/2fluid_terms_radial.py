@@ -311,7 +311,7 @@ def higher_order(sdfdata, species=None):
     avg_r = np.average(o_ma, axis=1)
     fig1, ax1 = plt.subplots()
     ax1.plot(avg_r)
-    ax1.savefig('vr.png', dpi=600, bbox_inches="tight")
+    fig1.savefig('vr.png', dpi=600, bbox_inches="tight")
 
     v_t = np.arctan2(vx, vy)
     v_t_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_t)
@@ -320,7 +320,7 @@ def higher_order(sdfdata, species=None):
     avg_t = np.average(o_ma, axis=1)
     fig2, ax2 = plt.subplots()
     ax2.plot(avg_t)
-    ax2.savefig('vt.png', dpi=600, bbox_inches="tight")
+    fig2.savefig('vt.png', dpi=600, bbox_inches="tight")
 
     v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
     v_3_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_3)
@@ -329,7 +329,7 @@ def higher_order(sdfdata, species=None):
     avg_3 = np.average(o_ma, axis=1)
     fig3, ax3 = plt.subplots()
     ax3.plot(avg_3)
-    ax3.savefig('v3.png', dpi=600, bbox_inches="tight")
+    fig3.savefig('v3.png', dpi=600, bbox_inches="tight")
 
 
     r = np.linspace(0.0, np.max(np.sqrt(x**2 + y**2)), num=avg_r.size)
@@ -341,14 +341,14 @@ def higher_order(sdfdata, species=None):
     num_1 = np.gradient(num_1, dx) #TODO: what to use for grid spacing radially
     fig4, ax4 = plt.subplots()
     ax4.plot(num_1)
-    ax4.savefig('num1.png', dpi=600, bbox_inches="tight")
+    fig4.savefig('num1.png', dpi=600, bbox_inches="tight")
 
     num_2 = np.multiply(avg_r, avg_t)
     num_2 = np.multiply(avg_3, num_2)
     num_2 = np.gradient(num_2, max(x.size, y.size)) #TODO: what to use for grid spacing theta
     fig5, ax5 = plt.subplots()
     ax5.plot(num_2)
-    ax5.savefig('num2.png', dpi=600, bbox_inches="tight")
+    fig5.savefig('num2.png', dpi=600, bbox_inches="tight")
 
     # num = np.divide(num_1 + num_2, r, where=r!=0.0)
     num = np.divide(num_1, r, where=r!=0.0)
