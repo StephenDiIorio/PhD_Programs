@@ -605,7 +605,7 @@ def main():
 
         high_order = higher_order(sdfdata, species='Electron')
 
-        cart_high_x = cart_higher_order_x(sdfdata, specied='Electron')
+        cart_high_x = cart_higher_order_x(sdfdata, species='Electron')
         cart_high_y = cart_higher_order_y(sdfdata, species='Electron')
         cart_high_avg, dummy_high_r, dummy_high_t = __radial_average(x_grid_cent, y_grid_cent, cart_high_x, cart_high_y)
 
