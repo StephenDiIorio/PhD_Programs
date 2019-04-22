@@ -343,7 +343,6 @@ def higher_order(sdfdata, species=None):
 
 
     r = np.linspace(0.0, np.max(np.sqrt(x**2 + y**2)), num=avg_r.size)
-    print(r)
 
     num_1 = np.multiply(r, avg_3)
     num_1 = np.multiply(avg_r, num_1)
