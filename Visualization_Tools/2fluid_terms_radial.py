@@ -304,7 +304,7 @@ def higher_order(sdfdata, species=None):
     p_list = list(zip(p_pos[0], p_pos[1]))
 
 
-    limit = 1e7
+    limit = 1e20
 
     v_r = np.sqrt(vx**2 + vy**2)# + vz**2) #NOTE: might need to get rid of vz. can then use cart2polar for v_r and v_t
     v_r_dist = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=v_r)
@@ -316,6 +316,7 @@ def higher_order(sdfdata, species=None):
     ax1[0].plot(avg_r)
     ax1[1].plot(np.clip(avg_r, -limit, limit))
     fig1.savefig('vr.png', dpi=600, bbox_inches="tight")
+    plt.close(fig1)
 
 
     v_t = np.arctan2(vx, vy)
@@ -328,6 +329,7 @@ def higher_order(sdfdata, species=None):
     ax2[0].plot(avg_t)
     ax2[1].plot(np.clip(avg_t, -limit, limit))
     fig2.savefig('vt.png', dpi=600, bbox_inches="tight")
+    plt.close(fig2)
 
 
     v_3 = (np.sqrt(vx**2 + vy**2 + vz**2))**3
@@ -340,10 +342,10 @@ def higher_order(sdfdata, species=None):
     ax3[0].plot(avg_3)
     ax3[1].plot(np.clip(avg_3, -limit, limit))
     fig3.savefig('avg_v3.png', dpi=600, bbox_inches="tight")
+    plt.close(fig3)
 
 
     r = np.linspace(0.0, np.max(np.sqrt(x**2 + y**2)), num=avg_r.size)
-    print(r)
 
     num_1 = np.multiply(r, avg_3)
     num_1 = np.multiply(avg_r, num_1)
@@ -353,6 +355,7 @@ def higher_order(sdfdata, species=None):
     ax4[0].plot(num_1)
     ax4[1].plot(np.clip(num_1, -limit, limit))
     fig4.savefig('num1_before_grad', dpi=600, bbox_inches="tight")
+    plt.close(fig4)
 
     num_1 = np.gradient(num_1, dx) #TODO: what to use for grid spacing radially
 
@@ -360,6 +363,7 @@ def higher_order(sdfdata, species=None):
     ax5[0].plot(num_1)
     ax5[1].plot(np.clip(num_1, -limit, limit))
     fig5.savefig('num1.png', dpi=600, bbox_inches="tight")
+    plt.close(fig5)
 
 
     num_2 = np.multiply(avg_r, avg_t)
@@ -369,6 +373,7 @@ def higher_order(sdfdata, species=None):
     ax6[0].plot(num_2)
     ax6[1].plot(np.clip(num_2, -limit, limit))
     fig6.savefig('num2_before_grad.png', dpi=600, bbox_inches="tight")
+    plt.close(fig6)
 
     num_2 = np.gradient(num_2, max(x.size, y.size)) #TODO: what to use for grid spacing theta
 
@@ -376,6 +381,7 @@ def higher_order(sdfdata, species=None):
     ax7[0].plot(num_2)
     ax7[1].plot(np.clip(num_2, -limit, limit))
     fig7.savefig('num2.png', dpi=600, bbox_inches="tight")
+    plt.close(fig7)
 
 
     # num = np.divide(num_1 + num_2, r, where=r!=0.0)
@@ -384,6 +390,7 @@ def higher_order(sdfdata, species=None):
     ax8[0].plot(num)
     ax8[1].plot(np.clip(num, -limit, limit))
     fig8.savefig('num.png', dpi=600, bbox_inches="tight")
+    plt.close(fig8)
 
     const = -sc.m_e / (2 * sc.e)
     final = const * np.divide(num, avg_3, where=avg_3!=0.0)
@@ -391,6 +398,7 @@ def higher_order(sdfdata, species=None):
     ax9[0].plot(final)
     ax9[1].plot(np.clip(final, -limit, limit))
     fig9.savefig('final.png', dpi=600, bbox_inches="tight")
+    plt.close(fig9)
 
     return final#const * np.divide(num, avg_3, where=avg_3!=0.0)
 
@@ -420,53 +428,63 @@ def cart_higher_order_x(sdfdata, species=None):
     vx_dist  = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=vx)
     vy_dist  = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=vy)
 
+    limit = 1e108
+
     fig1, ax1 = plt.subplots()
-    im1 = ax1.pcolormesh(v_3_dist)
+    im1 = ax1.pcolormesh(v_3_dist, vmin=-1e45, vmax=1e45)
     fig1.colorbar(im1)
     fig1.savefig('v3.png', dpi=600, bbox_inches="tight")
+    plt.close(fig1)
     fig2, ax2 = plt.subplots()
     im2 = ax2.pcolormesh(vx_dist)
     fig2.colorbar(im2)
     fig2.savefig('vx.png', dpi=600, bbox_inches="tight")
+    plt.close(fig2)
     fig3, ax3 = plt.subplots()
     im3 = ax3.pcolormesh(vy_dist)
     fig3.colorbar(im3)
     fig3.savefig('vy.png', dpi=600, bbox_inches="tight")
+    plt.close(fig3)
 
     term1 = np.multiply(vx_dist, vx_dist)
     term1 = np.multiply(term1, v_3_dist)
     fig4, ax4 = plt.subplots()
-    im4 = ax4.pcolormesh(term1)
+    im4 = ax4.pcolormesh(term1, vmin=-1e102, vmax=1e102)
     fig4.colorbar(im4)
     fig4.savefig('term1_cartx_before_grad.png', dpi=600, bbox_inches="tight")
+    plt.close(fig4)
 
     term1 = np.gradient(term1, dx, axis=0)
     fig5, ax5 = plt.subplots()
-    im5 = ax5.pcolormesh(term1)
+    im5 = ax5.pcolormesh(term1, vmin=-limit, vmax=limit)
     fig5.colorbar(im5)
     fig5.savefig('term1_cartx.png', dpi=600, bbox_inches="tight")
+    plt.close(fig5)
 
     term2 = np.multiply(vx_dist, vy_dist)
     term2 = np.multiply(term2, v_3_dist)
     fig6, ax6 = plt.subplots()
-    im6 = ax6.pcolormesh(term2)
+    im6 = ax6.pcolormesh(term2, vmin=-1e102, vmax=1e102)
     fig6.colorbar(im6)
     fig6.savefig('term2_cartx_before_grad.png', dpi=600, bbox_inches="tight")
+    plt.close(fig6)
 
     term2 = np.gradient(term2, dy, axis=1)
     fig7, ax7 = plt.subplots()
-    im7 = ax7.pcolormesh(term2)
+    im7 = ax7.pcolormesh(term2, vmin=-limit, vmax=limit)
     fig7.colorbar(im7)
     fig7.savefig('term2_cartx.png', dpi=600, bbox_inches="tight")
+    plt.close(fig7)
 
     div_num = term1 + term2
 
     const = -sc.m_e / (2 * sc.e)
-    final = const * np.divide(div_num, v_3_dist, where=v_3_dist!=0.0)
+    final = const * np.divide(div_num, v_3_dist, where=v_3_dist != 0.0)
     fig8, ax8 = plt.subplots()
-    im8 = ax8.pcolormesh(final)
+    im8 = ax8.pcolormesh(final, vmin=-1e53, vmax=1e53)
     fig8.colorbar(im8)
     fig8.savefig('final_cartx.png', dpi=600, bbox_inches="tight")
+    plt.close(fig8)
 
     return final
 
@@ -496,40 +514,47 @@ def cart_higher_order_y(sdfdata, species=None):
     vx_dist  = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=vx)
     vy_dist  = first_order_weight_2d(x, y, dx, dy, p_list, weight=w, values=vy)
 
+    limit = 1e108
+
     term1 = np.multiply(vy_dist, vx_dist)
     term1 = np.multiply(term1, v_3_dist)
     fig4, ax4 = plt.subplots()
-    im4 = ax4.pcolormesh(term1)
+    im4 = ax4.pcolormesh(term1, vmin=-1e102, vmax=1e102)
     fig4.colorbar(im4)
     fig4.savefig('term1_carty_before_grad.png', dpi=600, bbox_inches="tight")
+    plt.close(fig4)
 
     term1 = np.gradient(term1, dx, axis=0)
     fig5, ax5 = plt.subplots()
-    im5 = ax5.pcolormesh(term1)
+    im5 = ax5.pcolormesh(term1, vmin=-limit, vmax=limit)
     fig5.colorbar(im5)
     fig5.savefig('term1_carty.png', dpi=600, bbox_inches="tight")
+    plt.close(fig5)
 
     term2 = np.multiply(vy_dist, vy_dist)
     term2 = np.multiply(term2, v_3_dist)
     fig6, ax6 = plt.subplots()
-    im6 = ax6.pcolormesh(term2)
+    im6 = ax6.pcolormesh(term2, vmin=-1e102, vmax=1e102)
     fig6.colorbar(im6)
     fig6.savefig('term2_carty_before_grad.png', dpi=600, bbox_inches="tight")
+    plt.close(fig6)
 
     term2 = np.gradient(term2, dy, axis=1)
     fig7, ax7 = plt.subplots()
-    im7 = ax7.pcolormesh(term2)
+    im7 = ax7.pcolormesh(term2, vmin=-limit, vmax=limit)
     fig7.colorbar(im7)
     fig7.savefig('term2_carty.png', dpi=600, bbox_inches="tight")
+    plt.close(fig7)
 
     div_num = term1 + term2
 
     const = -sc.m_e / (2 * sc.e)
-    final = const * np.divide(div_num, v_3_dist, where=v_3_dist!=0.0)
+    final = const * np.divide(div_num, v_3_dist, where=v_3_dist != 0.0)
     fig8, ax8 = plt.subplots()
-    im8 = ax8.pcolormesh(final)
+    im8 = ax8.pcolormesh(final, vmin=-1e53, vmax=1e53)
     fig8.colorbar(im8)
     fig8.savefig('final_carty.png', dpi=600, bbox_inches="tight")
+    plt.close(fig8)
 
     return final
 
@@ -556,7 +581,7 @@ def main():
     # axarr[0].set_title(species + " files " + str(fnums))
     axarr[0].set_title('Contribution to E Field')
 
-    limit = 7E9
+    limit = 8E9
 
     for i in range(len(fname)):
         sdfdata = sdf.read(fname[i])
@@ -678,6 +703,7 @@ def main():
     # plt.show()
 
     plt.savefig('ohm_rad.png', dpi=600, bbox_extra_artists=(lgd,), bbox_inches = "tight", pad_inches=0.2)
+    plt.close(fig)
 
 
 if __name__ == "__main__":
