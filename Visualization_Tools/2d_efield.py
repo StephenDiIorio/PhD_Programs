@@ -99,7 +99,7 @@ def main():
     axarr[0].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult1)))
     axarr[1].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult2)))
 
-    axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult1)))
+    axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult1)-7))
 
     axarr[0].set(xlabel='x' + ' $(' + xsym1 + 'm)$', ylabel='y' + ' $(' + ysym1 + 'm)$')
     axarr[1].set(xlabel='x' + ' $(' + xsym2 + 'm)$')
@@ -111,9 +111,9 @@ def main():
 
     plt.set_cmap(cm.coolwarm)
 
-    divider = make_axes_locatable(axarr[1])
-    cax = divider.append_axes("right", "5%", pad="15%")
-    cbar = fig.colorbar(im, cax=cax, ax=axarr[1],
+    # divider = make_axes_locatable(axarr[1])
+    # cax = divider.append_axes("right", "5%", pad="15%")
+    cbar = fig.colorbar(im, ax=axarr.ravel().tolist(),#cax=cax, ax=axarr[1],
                         label='Electric Field Direction',
                         ticks=[e_data[1].data.min(), e_data[1].data.max()])
     cbar.ax.set_yticklabels(['$(-)$', '$(+)$'])
