@@ -116,7 +116,8 @@ def main():
                         ticks=[e_data[1].data.min(), e_data[1].data.max()])
     cbar.ax.set_yticklabels(['$(-)$', '$(+)$'])
 
-    plt.savefig('2defield.png', dpi=600, bbox_extra_artists=(txt,), bbox_inches="tight")
+    plt.savefig('2defield.png', dpi=600, # bbox_extra_artists=(txt,),
+        bbox_inches="tight")
 
 
 if __name__ == "__main__":
