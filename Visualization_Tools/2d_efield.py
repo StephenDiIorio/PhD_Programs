@@ -91,8 +91,8 @@ def main():
     ymin2, ymax2 = get_var_range(y_data[1])
     ymult2, ysym2 = get_si_prefix(ymax2 - ymin2)
 
-    y_data[0] = np.add(y_data[0], 5.0)
-    y_data[1] = np.add(y_data[1], 5.0)
+    y_data[0] = np.add(y_data[0], 5.0/ymult1)
+    y_data[1] = np.add(y_data[1], 5.0/ymult2)
 
     axarr[0].pcolormesh(x_data[0], y_data[0], e_data[0].data)
     axarr[0].set_title(('t={0:.2f} $' + tsym0 + 's$').format(t_data[0] * tmult0))
