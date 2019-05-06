@@ -81,11 +81,6 @@ def main():
     tmult0, tsym0 = get_si_prefix(t_data[0])
     tmult1, tsym1 = get_si_prefix(t_data[1])
 
-    xmin1, xmax1 = get_var_range(x_data[0])
-    xmult1, xsym1 = get_si_prefix(xmax1 - xmin1)
-    xmin2, xmax2 = get_var_range(x_data[1])
-    xmult2, xsym2 = get_si_prefix(xmax2 - xmin2)
-
     ymin1, ymax1 = get_var_range(y_data[0])
     ymult1, ysym1 = get_si_prefix(ymax1 - ymin1)
     ymin2, ymax2 = get_var_range(y_data[1])
@@ -93,6 +88,18 @@ def main():
 
     y_data[0] = np.add(y_data[0], 5.0/ymult1)
     y_data[1] = np.add(y_data[1], 5.0/ymult2)
+
+
+    xmin1, xmax1 = get_var_range(x_data[0])
+    xmult1, xsym1 = get_si_prefix(xmax1 - xmin1)
+    xmin2, xmax2 = get_var_range(x_data[1])
+    xmult2, xsym2 = get_si_prefix(xmax2 - xmin2)
+
+    # calculate again because array was shifted
+    ymin1, ymax1 = get_var_range(y_data[0])
+    ymult1, ysym1 = get_si_prefix(ymax1 - ymin1)
+    ymin2, ymax2 = get_var_range(y_data[1])
+    ymult2, ysym2 = get_si_prefix(ymax2 - ymin2)
 
     axarr[0].pcolormesh(x_data[0], y_data[0], e_data[0].data)
     axarr[0].set_title(('t={0:.2f} $' + tsym0 + 's$').format(t_data[0] * tmult0))
