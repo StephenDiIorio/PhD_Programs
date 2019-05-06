@@ -86,8 +86,8 @@ def main():
     ymin2, ymax2 = get_var_range(y_data[1])
     ymult2, ysym2 = get_si_prefix(ymax2 - ymin2)
 
-    y_data[0] = np.add(y_data[0], 5.5/ymult1)
-    y_data[1] = np.add(y_data[1], 5.5/ymult2)
+    y_data[0] = np.add(y_data[0], 4.5/ymult1)
+    y_data[1] = np.add(y_data[1], 4.5/ymult2)
 
 
     xmin1, xmax1 = get_var_range(x_data[0])
