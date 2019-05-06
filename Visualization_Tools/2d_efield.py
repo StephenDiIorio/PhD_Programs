@@ -48,7 +48,7 @@ def get_varname(varname, species=None):
 
 def main():
     path = "/scratch/lsa_flux/diiorios/Exp_Ar_32618/Full_smaller/"
-    fnums = ["00016", "00060"]
+    fnums = ["00008", "00200"]
     fname = []
     for n in fnums:
         fname.append(path + n + ".sdf")
@@ -81,11 +81,6 @@ def main():
     tmult0, tsym0 = get_si_prefix(t_data[0])
     tmult1, tsym1 = get_si_prefix(t_data[1])
 
-    axarr[0].pcolormesh(x_data[0], y_data[0], e_data[0].data)
-    axarr[0].set_title(('t={0:.2f} $' + tsym0 + 's$').format(t_data[0] * tmult0))
-    im = axarr[1].pcolormesh(x_data[1], y_data[1], e_data[1].data)
-    axarr[1].set_title(('t={0:.2f} $' + tsym1 + 's$').format(t_data[1] * tmult1))
-
     xmin1, xmax1 = get_var_range(x_data[0])
     xmult1, xsym1 = get_si_prefix(xmax1 - xmin1)
     xmin2, xmax2 = get_var_range(x_data[1])
@@ -95,6 +90,14 @@ def main():
     ymult1, ysym1 = get_si_prefix(ymax1 - ymin1)
     ymin2, ymax2 = get_var_range(y_data[1])
     ymult2, ysym2 = get_si_prefix(ymax2 - ymin2)
+
+    y_data[0] = np.add(y_data[0], 5.0)
+    y_data[1] = np.add(y_data[1], 5.0)
+
+    axarr[0].pcolormesh(x_data[0], y_data[0], e_data[0].data)
+    axarr[0].set_title(('t={0:.2f} $' + tsym0 + 's$').format(t_data[0] * tmult0))
+    im = axarr[1].pcolormesh(x_data[1], y_data[1], e_data[1].data)
+    axarr[1].set_title(('t={0:.2f} $' + tsym1 + 's$').format(t_data[1] * tmult1))
 
     axarr[0].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult1)))
     axarr[1].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult2)))
