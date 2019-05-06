@@ -99,15 +99,15 @@ def main():
     axarr[0].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult1)))
     axarr[1].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult2)))
 
-    axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult1)))
+    axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult1) - 7))
 
     axarr[0].set(xlabel='x' + ' $(' + xsym1 + 'm)$', ylabel='y' + ' $(' + ysym1 + 'm)$')
     axarr[1].set(xlabel='x' + ' $(' + xsym2 + 'm)$')
 
-    # axarr[0].set_ylim([ymin1, ymax1])
-    # axarr[1].set_ylim([ymin2, ymax2])
-    axarr[0].set_ylim([-5e-6, 5e-6])
-    axarr[1].set_ylim([-5e-6, 5e-6])
+    axarr[0].set_ylim([ymin1, ymax1])
+    axarr[1].set_ylim([ymin2, ymax2])
+    # axarr[0].set_ylim([-5e-6, 5e-6])
+    # axarr[1].set_ylim([-5e-6, 5e-6])
 
     plt.set_cmap(cm.coolwarm)
 
