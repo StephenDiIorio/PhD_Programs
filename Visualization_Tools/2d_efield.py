@@ -47,7 +47,7 @@ def get_varname(varname, species=None):
 
 
 def main():
-    path = "/scratch/lsa_flux/diiorios/Exp_Ar_32618/"
+    path = "/scratch/lsa_flux/diiorios/Exp_Ar_32618/Full_smaller/"
     fnums = ["00016", "00060"]
     fname = []
     for n in fnums:
