@@ -117,6 +117,11 @@ def main():
     axarr[0].set_ylim([ymin1, -ymin1])
     axarr[1].set_ylim([ymin2, -ymin2])
 
+    axarr[0].get_xaxis().set_tick_params(direction='in')
+    axarr[1].get_xaxis().set_tick_params(direction='in')
+    axarr[0].get_yaxis().set_tick_params(direction='in')
+    axarr[1].get_yaxis().set_tick_params(direction='in')
+
     plt.set_cmap(cm.coolwarm)
 
     # divider = make_axes_locatable(axarr[1])
