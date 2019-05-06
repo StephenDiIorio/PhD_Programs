@@ -99,7 +99,7 @@ def main():
     axarr[0].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult1)))
     axarr[1].xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{0:g}'.format(x * xmult2)))
 
-    axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult1)-7))
+    axarr[0].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult1)))
 
     axarr[0].set(xlabel='x' + ' $(' + xsym1 + 'm)$', ylabel='y' + ' $(' + ysym1 + 'm)$')
     axarr[1].set(xlabel='x' + ' $(' + xsym2 + 'm)$')
