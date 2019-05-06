@@ -47,7 +47,7 @@ def get_varname(varname, species=None):
 
 
 def main():
-    path = "/Users/stephendiiorio/Desktop/"
+    path = "/scratch/lsa_flux/diiorios/Exp_Ar_32618/"
     fnums = ["00016", "00060"]
     fname = []
     for n in fnums:
@@ -56,7 +56,7 @@ def main():
     fig, axarr = plt.subplots(1, 2, sharey='row')
     plt.set_cmap(cm.coolwarm)
     fig.set_facecolor("w")
-    txt = fig.suptitle('Laser Focus and Initial Electric Field', verticalalignment='bottom')
+    # txt = fig.suptitle('Laser Focus and Initial Electric Field', verticalalignment='bottom')
 
     # only have a single file to plot, so we so this little hack since
     # axarr does not come out in an array in this case
@@ -104,8 +104,8 @@ def main():
     axarr[0].set(xlabel='x' + ' $(' + xsym1 + 'm)$', ylabel='y' + ' $(' + ysym1 + 'm)$')
     axarr[1].set(xlabel='x' + ' $(' + xsym2 + 'm)$')
 
-    axarr[0].set_ylim([ymin1, ymax1])
-    axarr[1].set_ylim([ymin2, ymax2])
+    axarr[0].set_ylim([ymin1 - (7 / ymult1), ymax1 - (7 / ymult1)])
+    axarr[1].set_ylim([ymin2 - (7 / ymult1), ymax2 - (7 / ymult1)])
 
     plt.set_cmap(cm.coolwarm)
 
