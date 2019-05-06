@@ -104,8 +104,10 @@ def main():
     axarr[0].set(xlabel='x' + ' $(' + xsym1 + 'm)$', ylabel='y' + ' $(' + ysym1 + 'm)$')
     axarr[1].set(xlabel='x' + ' $(' + xsym2 + 'm)$')
 
-    axarr[0].set_ylim([ymin1 - (7 / ymult1), ymax1 - (7 / ymult1)])
-    axarr[1].set_ylim([ymin2 - (7 / ymult1), ymax2 - (7 / ymult1)])
+    # axarr[0].set_ylim([ymin1, ymax1])
+    # axarr[1].set_ylim([ymin2, ymax2])
+    axarr[0].set_ylim([-5e-6, 5e-6])
+    axarr[1].set_ylim([-5e-6, 5e-6])
 
     plt.set_cmap(cm.coolwarm)
 
