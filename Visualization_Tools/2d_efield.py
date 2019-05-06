@@ -86,8 +86,8 @@ def main():
     ymin2, ymax2 = get_var_range(y_data[1])
     ymult2, ysym2 = get_si_prefix(ymax2 - ymin2)
 
-    y_data[0] = np.add(y_data[0], 5.0/ymult1)
-    y_data[1] = np.add(y_data[1], 5.0/ymult2)
+    y_data[0] = np.add(y_data[0], 5.5/ymult1)
+    y_data[1] = np.add(y_data[1], 5.5/ymult2)
 
 
     xmin1, xmax1 = get_var_range(x_data[0])
@@ -116,15 +116,13 @@ def main():
 
     axarr[0].set_ylim([ymin1, -ymin1])
     axarr[1].set_ylim([ymin2, -ymin2])
-    # axarr[0].set_ylim([-5e-6, 5e-6])
-    # axarr[1].set_ylim([-5e-6, 5e-6])
 
     plt.set_cmap(cm.coolwarm)
 
     # divider = make_axes_locatable(axarr[1])
     # cax = divider.append_axes("right", "5%", pad="15%")
     cbar = fig.colorbar(im, ax=axarr.ravel().tolist(),#cax=cax, ax=axarr[1],
-                        label='Electric Field Direction',
+                        label='Electric Field ($E_{y}$) Direction',
                         ticks=[e_data[1].data.min(), e_data[1].data.max()])
     cbar.ax.set_yticklabels(['$(-)$', '$(+)$'])
 
