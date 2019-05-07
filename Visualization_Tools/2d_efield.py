@@ -114,8 +114,8 @@ def main():
     axarr[0].set(xlabel='x' + ' $(' + xsym1 + 'm)$', ylabel='y' + ' $(' + ysym1 + 'm)$')
     axarr[1].set(xlabel='x' + ' $(' + xsym2 + 'm)$')
 
-    axarr[0].set_ylim([ymin1, -ymin1])
-    axarr[1].set_ylim([ymin2, -ymin2])
+    axarr[0].set_ylim([-10e-6, 10e-6])
+    axarr[1].set_ylim([-10e-6, 10e-6])
 
     axarr[0].get_xaxis().set_tick_params(direction='in')
     axarr[1].get_xaxis().set_tick_params(direction='in')
