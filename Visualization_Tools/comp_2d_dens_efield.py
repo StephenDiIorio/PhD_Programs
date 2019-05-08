@@ -9,6 +9,7 @@ package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to cu
 sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
 
 import matplotlib.cm as cm
+import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FuncFormatter
@@ -316,20 +317,23 @@ def main():
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
     emin, emax = get_var_range(e_data)
-    emax = 3e9
+    # emax = 3e9
     emult, esym = get_si_prefix(emax - emin)
     dmin, dmax = get_var_range(d_data)
-    dmax = 0.5e23
+    # dmax = 0.5e23
     dmult, dsym = get_si_prefix(dmax - dmin)
 
     fig, axarr = plt.subplots(2, 1, sharex='col')
     # plt.set_cmap(cm.coolwarm)
     fig.set_facecolor("w")
 
-
-    e_im = axarr[0].pcolormesh(t_data, r_data, e_data, cmap=cm.coolwarm, vmin=emin, vmax=emax)
+    e_im = axarr[0].pcolormesh(t_data, r_data, e_data,
+                              norm=colors.LogNorm(vmin=emin, vmax=emax),
+                              cmap=cm.coolwarm)#, vmin=emin, vmax=emax)
     axarr[0].set_title('(a)', loc='left')
-    d_im = axarr[1].pcolormesh(t_data, r_data, d_data, cmap=cm.plasma, vmin=dmin, vmax=dmax)
+    d_im = axarr[1].pcolormesh(t_data, r_data, d_data,
+                               norm=colors.LogNorm(vmin=dmin, vmax=dmax),
+                               cmap=cm.plasma)#, vmin=dmin, vmax=dmax)
     axarr[1].set_title('(b)', loc='left')
 
     e_label = '$E_{r}$ $(' + esym + e_var.units + ')$'
