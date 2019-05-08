@@ -326,10 +326,6 @@ def main():
     # plt.set_cmap(cm.coolwarm)
     fig.set_facecolor("w")
 
-    print(np.shape(t_data))
-    print(np.shape(r_data))
-    print(np.shape(e_data))
-    print(np.shape(d_data))
 
     e_im = axarr[0].pcolormesh(t_data, r_data, e_data, cmap=cm.coolwarm, vmin=emin, vmax=emax)
     axarr[0].set_title('(a)', loc='left')
