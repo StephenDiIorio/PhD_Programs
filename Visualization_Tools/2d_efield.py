@@ -31,12 +31,12 @@ except:
         pass
 
 
-plt.rc('font', size=20)        # controls default text sizes
-plt.rc('axes', titlesize=18)   # fontsize of the axes title
-plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
-plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
-plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
-plt.rc('legend', fontsize=16)  # legend fontsize
+# plt.rc('font', size=20)        # controls default text sizes
+# plt.rc('axes', titlesize=18)   # fontsize of the axes title
+# plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
+# plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
+# plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
+# plt.rc('legend', fontsize=16)  # legend fontsize
 
 
 def get_varname(varname, species=None):
