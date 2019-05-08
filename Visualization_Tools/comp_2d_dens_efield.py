@@ -316,10 +316,10 @@ def main():
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
     emin, emax = get_var_range(e_data)
-    emax = 5e9
+    emax = 3e9
     emult, esym = get_si_prefix(emax - emin)
     dmin, dmax = get_var_range(d_data)
-    dmax = 1e23
+    dmax = 0.5e23
     dmult, dsym = get_si_prefix(dmax - dmin)
 
     fig, axarr = plt.subplots(2, 1, sharex='col')
@@ -332,8 +332,8 @@ def main():
     d_im = axarr[1].pcolormesh(t_data, r_data, d_data, cmap=cm.plasma, vmin=dmin, vmax=dmax)
     axarr[1].set_title('(b)', loc='left')
 
-    e_label = '$E_{r} (' + esym + e_var.units + ')$'
-    d_label = 'Radial ' + '$n_{e} (' + dsym + d_var.units + ')$'
+    e_label = '$E_{r}$ $(' + esym + e_var.units + ')$'
+    d_label = 'Radial $n_{e}$ $(' + dsym + d_var.units + ')$'
     fig.colorbar(e_im, ax=axarr[0], label=e_label, format=FuncFormatter(lambda x, y: x * emult))
     fig.colorbar(d_im, ax=axarr[1], label=d_label, format=FuncFormatter(lambda x, y: x * dmult))
 
