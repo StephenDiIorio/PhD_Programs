@@ -14,7 +14,7 @@ import numpy as np
 from matplotlib.ticker import FuncFormatter
 
 from CoordinateTransforms import cart2polar, reproject_image_into_polar
-from PlottingTools import get_si_prefix, calculate_aspect, get_var_range
+from PlottingTools import get_si_prefix, get_var_range
 import sdf
 
 
@@ -90,10 +90,13 @@ def density_radial_average(sdf_data, varname):
 
 def main():
     directory = '/scratch/lsa_flux/diiorios/2d_run/'
+    field = 'Electric_Field_Ex'
+    spec = 'Electron'
+    den = 'Derived_Number_Density_' + spec
 
     file_list = get_files(wkdir=directory)
-    e_file_list = clean_file_list(file_list, 'Electric_Field_Ex')
-    d_file_list = clean_file_list(file_list, 'Derived_Number_Density_Electron')
+    e_file_list = clean_file_list(file_list, field)
+    d_file_list = clean_file_list(file_list, den)
 
     e_file_list.remove(directory + '0000.sdf')
     e_file_list.remove(directory + '0002.sdf')
@@ -284,14 +287,14 @@ def main():
     d_data = []
     for f in e_file_list:
         d = sdf.read(f)
-        avg, r, t = electric_radial_average(d)
+        avg, r, dummy_t = electric_radial_average(d)
         e_data.append(avg)
     for f in d_file_list:
         d = sdf.read(f)
-        avg, r, t = density_radial_average(d)
+        avg, r, dummy_t = density_radial_average(d, den)
         d_data.append(avg)
-    e_var = d.__dict__['Electric_Field_Ex']  # for units later
-    d_var = d.__dict__['Derived_Number_Density_Electron']  # for units later
+    e_var = d.__dict__[field]  # for units later
+    d_var = d.__dict__[den]  # for units later
 
     e_data = np.asarray(e_data)
     e_data = e_data.T
@@ -327,7 +330,7 @@ def main():
     axarr[1].set_title('(b)', loc='left')
 
     e_label = 'Radial Electric Field $(' + esym + e_var.units + ')$'
-    d_label = 'Radial Electron Number Density $(' + dsym + d_var.units + ')$'
+    d_label = 'Radial ' + spec + ' Number Density $(' + dsym + d_var.units + ')$'
     fig.colorbar(e_im, ax=axarr[0], label=e_label, format=FuncFormatter(lambda x, y: x * emult))
     fig.colorbar(d_im, ax=axarr[1], label=d_label, format=FuncFormatter(lambda x, y: x * dmult))
 
