@@ -320,6 +320,7 @@ def main():
     # emax = 3e9
     emult, esym = get_si_prefix(emax - emin)
     dmin, dmax = get_var_range(d_data)
+    dmin = max(d_data.min(), 0.1)
     # dmax = 0.5e23
     dmult, dsym = get_si_prefix(dmax - dmin)
 
@@ -333,7 +334,8 @@ def main():
     axarr[0].set_title('(a)', loc='left')
     d_im = axarr[1].pcolormesh(t_data, r_data, d_data,
                                norm=colors.LogNorm(vmin=dmin, vmax=dmax),
-                               cmap=cm.plasma)#, vmin=dmin, vmax=dmax)
+                               cmap=cm.plasma,
+                               vmin=dmin)#, vmax=dmax)
     axarr[1].set_title('(b)', loc='left')
 
     e_label = '$E_{r}$ $(' + esym + e_var.units + ')$'
