@@ -301,12 +301,12 @@ def main():
     d_data = np.asarray(d_data)
     d_data = d_data.T
 
-    dt = sdf.read(e_file_list[1]).Header['time'] - sdf.read(e_file_list[0]).Header['time']
     tmin = sdf.read(e_file_list[0]).Header['time']
     tmax = sdf.read(e_file_list[-1]).Header['time']
-    t_data = np.arange(tmin, tmax+dt, dt)
+    t_data = np.linspace(tmin, tmax, np.shape(e_data)[1])
     rmin = np.min(r)
     rmax = np.max(r)
+    r_data = np.linspace(rmin, rmax, np.shape(e_data)[0])
     print(rmin, rmax)
 
     # shape = e_data.shape
@@ -325,12 +325,13 @@ def main():
     fig.set_facecolor("w")
 
     print(np.shape(t_data))
-    print(np.shape(r))
+    print(np.shape(r_data))
     print(np.shape(e_data))
+    print(np.shape(d_data))
 
-    e_im = axarr[0].pcolormesh(t_data, r, e_data, cmap=cm.coolwarm)
+    e_im = axarr[0].pcolormesh(t_data, r_data, e_data, cmap=cm.coolwarm)
     axarr[0].set_title('(a)', loc='left')
-    d_im = axarr[1].pcolormesh(t_data, r, d_data, cmap=cm.plasma)
+    d_im = axarr[1].pcolormesh(t_data, r_data, d_data, cmap=cm.plasma)
     axarr[1].set_title('(b)', loc='left')
 
     e_label = 'Radial Electric Field $(' + esym + e_var.units + ')$'
