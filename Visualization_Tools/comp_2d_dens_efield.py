@@ -18,12 +18,12 @@ from PlottingTools import get_si_prefix, get_var_range
 import sdf
 
 
-plt.rc('font', size=20)        # controls default text sizes
-plt.rc('axes', titlesize=18)   # fontsize of the axes title
-plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
-plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
-plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
-plt.rc('legend', fontsize=16)  # legend fontsize
+# plt.rc('font', size=20)        # controls default text sizes
+# plt.rc('axes', titlesize=18)   # fontsize of the axes title
+# plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
+# plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
+# plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
+# plt.rc('legend', fontsize=16)  # legend fontsize
 
 
 def get_files(wkdir='Data'):
@@ -316,8 +316,10 @@ def main():
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
     emin, emax = get_var_range(e_data)
+    emax = 5e9
     emult, esym = get_si_prefix(emax - emin)
     dmin, dmax = get_var_range(d_data)
+    dmax = 1e23
     dmult, dsym = get_si_prefix(dmax - dmin)
 
     fig, axarr = plt.subplots(2, 1, sharex='col')
@@ -329,13 +331,13 @@ def main():
     print(np.shape(e_data))
     print(np.shape(d_data))
 
-    e_im = axarr[0].pcolormesh(t_data, r_data, e_data, cmap=cm.coolwarm)
+    e_im = axarr[0].pcolormesh(t_data, r_data, e_data, cmap=cm.coolwarm, vmin=emin, vmax=emax)
     axarr[0].set_title('(a)', loc='left')
-    d_im = axarr[1].pcolormesh(t_data, r_data, d_data, cmap=cm.plasma)
+    d_im = axarr[1].pcolormesh(t_data, r_data, d_data, cmap=cm.plasma, vmin=dmin, vmax=dmax)
     axarr[1].set_title('(b)', loc='left')
 
-    e_label = 'Radial Electric Field $(' + esym + e_var.units + ')$'
-    d_label = 'Radial ' + spec + ' Number Density $(' + dsym + d_var.units + ')$'
+    e_label = '$E_{r} (' + esym + e_var.units + ')$'
+    d_label = 'Radial ' + '$n_{e} (' + dsym + d_var.units + ')$'
     fig.colorbar(e_im, ax=axarr[0], label=e_label, format=FuncFormatter(lambda x, y: x * emult))
     fig.colorbar(d_im, ax=axarr[1], label=d_label, format=FuncFormatter(lambda x, y: x * dmult))
 
