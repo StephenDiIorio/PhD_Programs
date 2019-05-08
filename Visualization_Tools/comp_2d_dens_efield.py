@@ -328,8 +328,8 @@ def main():
     fig.set_facecolor("w")
 
     e_im = axarr[0].pcolormesh(t_data, r_data, e_data,
-                              norm=colors.LogNorm(vmin=emin, vmax=emax),
-                              cmap=cm.coolwarm)#, vmin=emin, vmax=emax)
+                               norm=colors.SymLogNorm(linthresh=0.03, linscale=0.03, vmin=emin, vmax=emax),
+                               cmap=cm.coolwarm)#, vmin=emin, vmax=emax)
     axarr[0].set_title('(a)', loc='left')
     d_im = axarr[1].pcolormesh(t_data, r_data, d_data,
                                norm=colors.LogNorm(vmin=dmin, vmax=dmax),
