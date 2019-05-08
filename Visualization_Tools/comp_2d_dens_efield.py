@@ -310,9 +310,6 @@ def main():
     r_data = np.linspace(rmin, rmax, np.shape(e_data)[0])
     print(rmin, rmax)
 
-    # shape = e_data.shape
-    # extent = [tmin, tmax, rmin, rmax]
-
     rmult, rsym = get_si_prefix(rmax - rmin)  # y axis
     tmult, tsym = get_si_prefix(tmax - tmin)  # x axis
 
@@ -325,7 +322,6 @@ def main():
     dmult, dsym = get_si_prefix(dmax - dmin)
 
     fig, axarr = plt.subplots(2, 1, sharex='col')
-    # plt.set_cmap(cm.coolwarm)
     fig.set_facecolor("w")
 
     e_im = axarr[0].pcolormesh(t_data, r_data, e_data,
