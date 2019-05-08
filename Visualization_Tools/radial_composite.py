@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import FuncFormatter
 
-import sdf
 from CoordinateTransforms import cart2polar, reproject_image_into_polar
 from PlottingTools import get_si_prefix, calculate_aspect
+import sdf
 
 
 plt.rc('font', size=20)        # controls default text sizes
