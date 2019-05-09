@@ -19,12 +19,12 @@ from PlottingTools import get_si_prefix, get_var_range
 from Weighting import first_order_weight_2d
 
 
-plt.rc('font', size=20)        # controls default text sizes
-plt.rc('axes', titlesize=18)   # fontsize of the axes title
-plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
-plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
-plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
-plt.rc('legend', fontsize=16)  # legend fontsize
+# plt.rc('font', size=20)        # controls default text sizes
+# plt.rc('axes', titlesize=18)   # fontsize of the axes title
+# plt.rc('axes', labelsize=15)   # fontsize of the x and y labels
+# plt.rc('xtick', labelsize=12)  # fontsize of the tick labels
+# plt.rc('ytick', labelsize=12)  # fontsize of the tick labels
+# plt.rc('legend', fontsize=16)  # legend fontsize
 
 
 def get_varname(varname, species=None):
@@ -579,9 +579,9 @@ def main():
         axarr = np.array([axarr])
 
     # axarr[0].set_title(species + " files " + str(fnums))
-    axarr[0].set_title('Contribution to E Field')
+    # axarr[0].set_title('Contribution to E Field')
 
-    limit = 8E9
+    limit = 30E9
 
     for i in range(len(fname)):
         sdfdata = sdf.read(fname[i])
@@ -650,7 +650,7 @@ def main():
         l2, = axarr[i].plot(#temp_r,
                             np.clip(temp_avg, -limit, limit),
                             'r--',
-                            label='Thermal')
+                            label='Pressure Tensor Gradient')
         # l3, = axarr[i].plot(#rmhd_r,
         #                     np.clip(rmhd_avg, -limit, limit),
         #                     'b-.',
@@ -664,21 +664,21 @@ def main():
         #                            -limit, limit),
         #                    'm-.',
         #                    label='Ideal MHD Term')
-        l6, = axarr[i].plot(np.clip(gen_avg, -limit, limit),
-                            'm-.',
-                            label='Generalized Ohm',
-                            alpha=0.2)
+        # l6, = axarr[i].plot(np.clip(gen_avg, -limit, limit),
+        #                     'm-.',
+        #                     label='Generalized Ohm',
+        #                     alpha=0.2)
         l7, = axarr[i].plot(np.clip(gen_avg2, -limit, limit),
                             'c-.',
-                            label='Gen Ohm Avg 1st')
+                            label='Ohm Law 1st Term')
         l8, = axarr[i].plot(np.clip(high_order, -limit, limit),
                             'g:',
-                            label='Higher Order')
-        l9, = axarr[i].plot(np.clip(cart_high_avg, -limit, limit),
-                            'b:',
-                            label='Cart Higher Order')
+                            label='Ohm Law 2nd Term')
+        # l9, = axarr[i].plot(np.clip(cart_high_avg, -limit, limit),
+        #                     'b:',
+        #                     label='Cart Higher Order')
 
-    ls = [l1, l2, l6, l7, l8, l9]  #l3, l4, l5]
+    ls = [l1, l2, l7, l8]  #l3, l4, l5]
     labels = [l.get_label() for l in ls]
     lgd = fig.legend(ls, labels, bbox_to_anchor=(1.05, 1.0), loc=1)
     fig.subplots_adjust(hspace=0)
@@ -693,14 +693,22 @@ def main():
     axarr[1].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
     axarr[2].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
 
+    limit = 8e9
     axarr[0].set_ylim([-limit, limit])
     axarr[1].set_ylim([-limit, limit])
     axarr[2].set_ylim([-limit, limit])
 
     # plt.xlabel('x' + ' $(' + xsym + 'm)$')
-    plt.xlabel('x')
+    plt.xlabel('r')
+    axarr[2].set_xlim([dummy_e_r.min(), dummy_e_r.max()])
+
     axarr[1].set_ylabel('Radial Electric Field' + ' $(' + ysym + 'V/m)$')
     # plt.show()
+
+    axarr[0].get_yaxis().set_tick_params(direction='in')
+    axarr[1].get_yaxis().set_tick_params(direction='in')
+    axarr[2].get_yaxis().set_tick_params(direction='in')
+    axarr[2].get_xaxis().set_tick_params(direction='in')
 
     plt.savefig('ohm_rad.png', dpi=600, bbox_extra_artists=(lgd,), bbox_inches = "tight", pad_inches=0.2)
     plt.close(fig)
