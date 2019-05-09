@@ -581,10 +581,12 @@ def main():
     # axarr[0].set_title(species + " files " + str(fnums))
     # axarr[0].set_title('Contribution to E Field')
 
-    limit = 30E9
+    limit = 8E9
 
     for i in range(len(fname)):
         sdfdata = sdf.read(fname[i])
+
+        print(sdfdata.Header['time'])
 
         e_var_x = sdfdata.Electric_Field_Ex
         e_var_y = sdfdata.Electric_Field_Ey
@@ -693,14 +695,15 @@ def main():
     axarr[1].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
     axarr[2].yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
 
-    limit = 8e9
     axarr[0].set_ylim([-limit, limit])
     axarr[1].set_ylim([-limit, limit])
     axarr[2].set_ylim([-limit, limit])
 
-    # plt.xlabel('x' + ' $(' + xsym + 'm)$')
-    plt.xlabel('r')
+    # plt.xlabel('r')
+    xmult, xsym = get_si_prefix(dummy_e_r.max() - dummy_e_r.min())
+    axarr[2].xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
     axarr[2].set_xlim([dummy_e_r.min(), dummy_e_r.max()])
+    plt.xlabel('r' + ' $(' + xsym + 'm)$')
 
     axarr[1].set_ylabel('Radial Electric Field' + ' $(' + ysym + 'V/m)$')
     # plt.show()
