@@ -699,10 +699,9 @@ def main():
     axarr[1].set_ylim([-limit, limit])
     axarr[2].set_ylim([-limit, limit])
 
-    plt.xlabel('r')
-    xmult, xsym = get_si_prefix(dummy_e_r.max() - dummy_e_r.min())
-    axarr[2].xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
-    axarr[2].set_xlim([dummy_e_r.min(), dummy_e_r.max()])
+    # xmult, xsym = get_si_prefix(dummy_e_r.max() - dummy_e_r.min())
+    # axarr[2].xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
+    # axarr[2].set_xlim([dummy_e_r.min(), dummy_e_r.max()])
     plt.xlabel('r' + ' $(' + xsym + 'm)$')
 
     axarr[1].set_ylabel('$E_{r}$ $(' + ysym + 'V/m)$')
