@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # T
 import matplotlib.animation as animation
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 import numpy as np
 
 import sdf
@@ -110,13 +111,11 @@ def find_renderer(fig):
     return(renderer)
 
 
-def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
-                figsize=None, ax=None):
+def plot_figure(filename, varname, vmin=None, vmax=None, figsize=None, ax=None):
     """
     Plot the given variable for each file from a simulation
     """
 
-    from matplotlib.ticker import FuncFormatter
     global verbose, title_info
 
     if verbose > 1:
@@ -151,8 +150,6 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
     grid = var.grid
     vdata = var.data
 
-    vscale = get_scale(filename, varname, scale)
-
     i0 = 1
     i1 = 0
     if len(grid.dims) == 2:
@@ -183,10 +180,10 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
     if verbose > 1:
         print('Scaling data')
 
-    vdata = vdata * vscale
+    vdata = vdata
 
     if vmin is None:
-        vmin, vmax = get_var_range_from_sdf_files((filename,), varname, scale)
+        vmin, vmax = get_var_range_from_sdf_files((filename,), varname)
 
     if verbose > 1:
         print('Plotting data')
@@ -195,16 +192,13 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
     if verbose > 1:
         print('Plotting axes')
 
-    def fmt(x, pos):
-        return r'${}$'.format(x)
-
     xmult, xsym = get_si_prefix(np.max(x) - np.min(x))
     ymult, ysym = get_si_prefix(np.max(y) - np.min(y))
     if verbose > 1:
         print('Scale axis by {} ({}, {})'.format(xmult, np.min(x), np.max(x)))
 
-    ax.xaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * xmult)))
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, y: (x * ymult)))
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda x, y: '{:.2f}'.format(x * xmult)))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, y: '{:.2f}'.format(x * ymult)))
 
     ax.set_xlabel(grid.labels[i0] + ' $(' + xsym + grid.units[i0] + ')$')
     ax.set_ylabel(grid.labels[i1] + ' $(' + ysym + grid.units[i1] + ')$')
@@ -231,9 +225,9 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
         legend_label = data_label
 
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", "5%", pad="15%")
+    cax = divider.append_axes("right", "5%", pad="5%")
     cbar = fig.colorbar(im, cax=cax, ax=ax, label=legend_label,
-                        format=FuncFormatter(lambda x, y: x * mult))
+                        format=FuncFormatter(lambda x, y: '{:.2f}'.format(x * mult)))
 
     if title_info:
         title_label = data_label + ', '
@@ -255,23 +249,23 @@ def plot_figure(filename, varname, vmin=None, vmax=None, scale=False,
 plot_figure.first = True
 
 
-def plot_first_figure(file_list, varname, vmin=None, vmax=None, scale=False):
+def plot_first_figure(file_list, varname, vmin=None, vmax=None):
     global verbose, title_info
 
     if verbose > 1:
         print('Getting data range')
     if vmin is None and vmax is None:
-        vmin, vmax = get_var_range_from_sdf_files(file_list, varname, scale)
+        vmin, vmax = get_var_range_from_sdf_files(file_list, varname)
     elif vmin is None:
-        vmin = get_var_range_from_sdf_files(file_list, varname, scale)[0]
+        vmin = get_var_range_from_sdf_files(file_list, varname)[0]
     elif vmax is None:
-        vmax = get_var_range_from_sdf_files(file_list, varname, scale)[1]
+        vmax = get_var_range_from_sdf_files(file_list, varname)[1]
 
     if verbose > 1:
         print('Found data range ({}, {})'.format(vmin, vmax))
 
     filename = file_list[0]
-    im, ax = plot_figure(filename, varname, vmin, vmax, scale)
+    im, ax = plot_figure(filename, varname, vmin, vmax)
     fig = ax.get_figure()
     renderer = find_renderer(fig)
     box_orig = fig.bbox_inches
@@ -291,7 +285,7 @@ def plot_first_figure(file_list, varname, vmin=None, vmax=None, scale=False):
         w = round(10 * w) / 10.
         figsize = (w, h)
 
-    im, ax = plot_figure(filename, varname, vmin, vmax, scale, figsize)
+    im, ax = plot_figure(filename, varname, vmin, vmax, figsize)
     fig = ax.get_figure()
 
     # Get positions of the title's step and time text fields so that they
@@ -338,53 +332,12 @@ def plot_first_figure(file_list, varname, vmin=None, vmax=None, scale=False):
     return im, fig
 
 
-def get_scale(filename, varname, scale=False):
-    global verbose
-
-    if get_scale.vscale is not None:
-        return get_scale.vscale
-
-    if verbose > 1:
-        print('Calculating scaling factor')
-
-    r2 = 1
-    if scale:
-        data = sdf.read(filename)
-        var = data.__dict__[varname]
-        r0 = data.Grid_Grid_Orig.data[0][0]**2
-        if (var.grid.dims[0] == 1):
-            x = var.grid.data[0][0, :, :]
-            y = var.grid.data[1][0, :, :]
-        elif (var.grid.dims[1] == 1):
-            x = var.grid.data[0][:, 0, :]
-            y = var.grid.data[1][:, 0, :]
-        else:
-            x = var.grid.data[0][:, :, 0]
-            y = var.grid.data[1][:, :, 0]
-            z = var.grid.data[2][:, :, 0]
-            x = np.sqrt(x * x + y * y)
-            y = z
-        r2 = x**2 + y**2
-        r2 = 0.5 * (r2[1:, :] + r2[:-1, :])
-        r2 = 0.5 * (r2[:, 1:] + r2[:, :-1])
-        r2 = r2 / r0
-
-    get_scale.vscale = r2
-    return get_scale.vscale
-
-
-get_scale.vscale = None
-
-
-# def plot_figures(varname, scale=False, base=None):
 # EDIT: ADD DIRECTORY AS OPTIONAL ARGUMENT
-def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
-                 base=None):
+def plot_figures(varname, vmin=None, vmax=None, directory='Data', base=None):
     """
     Plot the given variable for each file from a simulation
     """
 
-    from matplotlib.transforms import TransformedBbox, Affine2D
     global verbose
 
     # file_list = get_files(base=base)
@@ -393,20 +346,14 @@ def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
     file_list = clean_file_list(file_list, varname)
     if verbose > 0:
         print('Found {} files to plot'.format(len(file_list)))
-    im, fig = plot_first_figure(file_list, varname, vmin, vmax, scale)
+    im, fig = plot_first_figure(file_list, varname, vmin, vmax)
     fig.savefig(varname + '.png', bbox_inches='tight', dpi=200)
-
-    vscale = get_scale(file_list[0], varname, scale)
 
     # Draw plots
     def init():
         data = sdf.read(file_list[0])
-        var = data.__dict__[varname]
-        fig.t1 = fig.text(fig.x1, fig.y,
-                          'step={}, '.format(data.Header['step']),
-                          fontsize=fig.fs, ha='left', va='bottom')
-        fig.t2 = fig.text(fig.x2, fig.y, 'time={}'.format(data.Header['time']),
-                          fontsize=fig.fs, ha='left', va='bottom')
+        plt.title('step={}, time={}'.format(data.Header['step'],
+                                            data.Header['time']))
         return im,
 
     # Draw plots
@@ -415,14 +362,29 @@ def plot_figures(varname, vmin=None, vmax=None, scale=False, directory='Data',
             print('Generating frame for file {}'.format(filename))
         data = sdf.read(filename)
         var = data.__dict__[varname]
-        vdata = vscale * var.data
-        # im.set_data(var.data)
-        im.set_array(vdata.ravel())
-        fig.t1.set_text('step={}, '.format(data.Header['step']))
-        fig.t2.set_text('time={}'.format(data.Header['time']))
-        return im,
+        vdata = var.data
 
-    #    im.set_data(tmp)
+        grid = var.grid
+        i1 = 0
+        y = grid.data[i1]
+
+        ax = plt.gca()
+
+        im.set_array(vdata.ravel())
+
+        # Hack to change y axis for moving window. Change tick labels
+        # instead of changing the limits of axes. This plays better
+        # with pcolormesh.
+        ymult, ysym = get_si_prefix(np.max(y) - np.min(y))
+        curr_ticks = ax.get_yticks()
+        new_ticks = np.linspace(np.min(y), np.max(y), num=np.size(curr_ticks))
+        new_ticks = np.array(['{:.2f}'.format(x * ymult) for x in new_ticks])
+        ax.set_yticklabels(new_ticks)
+        ax.set_ylabel(grid.labels[i1] + ' $(' + ysym + grid.units[i1] + ')$')
+        plt.title('step={}, time={}'.format(data.Header['step'],
+                                            data.Header['time']))
+
+        return im,
 
     ani = animation.FuncAnimation(fig, update, init_func=init,
                                   frames=file_list[::1],
@@ -473,8 +435,6 @@ def main():
     # EDIT: TAKE IN MULTIPLE VARIABLES TO PLOT
     parser.add_argument('variable', type=str, default=varname, nargs='*',
                         help="Variable to plot")
-    parser.add_argument('-s', '--scale', action="store_true",
-                        help="Scale variable by r^2")
     parser.add_argument('-l', '--list', action="store_true",
                         help="List variables in SDF file")
     parser.add_argument('-t', '--title-info', action="store_true",
@@ -516,10 +476,9 @@ def main():
     if args.list:
         list_file_variables(base=args.filename)
     else:
-        # plot_figures(args.variable, args.scale, base=args.filename)
         # EDIT: CALL PLOT_FIGURES WITH DIRECTORY ARGUMENT
         # take first element of directory because parser gives args in a list
-        plot_figures(var, scale=args.scale, vmin=vmin, vmax=vmax,
+        plot_figures(var, vmin=vmin, vmax=vmax,
                      directory=args.directory[0], base=args.filename)
 
 
