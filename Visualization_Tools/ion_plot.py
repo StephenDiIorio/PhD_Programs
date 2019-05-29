@@ -2,6 +2,11 @@ from matplotlib import use
 use('Agg')
 
 import glob
+import os.path
+import sys
+
+package_directory = os.path.dirname(os.path.abspath(__file__))  # Get path to current file
+sys.path.insert(0, os.path.join(package_directory, os.pardir, 'Utilities'))  # Trace path back to Utilities folder to import modules
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,27 +14,14 @@ import scipy.constants as sc
 from matplotlib import rc
 from matplotlib.ticker import FuncFormatter
 
-rc('mathtext', default='regular')
+from PlottingTools import get_si_prefix
 
-
-def get_si_prefix(scale):
-    scale = abs(scale)
-    mult = 1
-    sym = ''
-
-    scale = scale * mult
-    if scale <= 0:
-        pwr = 0
-    else:
-        pwr = (-np.floor(np.log10(scale)))
-    mult = mult * np.power(10.0, pwr)
-    if np.rint(pwr) != 0:
-        sym = "x10^{%.0f}" % (-pwr) + sym
-
-    return mult, sym
+# rc('mathtext', default='regular')
 
 
 def ion_intens(energy, ion_charge):
+    # leave ion_charge as at least 1 to get intensity to fully ionize
+    # can think of this as the number of electrons left to ionize
     return 4E9 * (energy**4 / ion_charge**2) * 1E4
 
 

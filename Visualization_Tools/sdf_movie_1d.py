@@ -12,8 +12,8 @@ import matplotlib.animation as animation
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import numpy as np
 from matplotlib.ticker import FuncFormatter
+import numpy as np
 
 import sdf
 from PlottingTools import get_si_prefix, get_var_range_from_sdf_files
