@@ -1,75 +1,191 @@
 /*
-   3D particle tracking code
+  --------------------------------------------------
+  PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
+  Moderized by Stephen DiIorio 2019
 
   Initialization functions for PARTRAC
+  --------------------------------------------------
 */
 
 #ifndef PARTRAC_INIT
 #define PARTRAC_INIT
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <math.h>
+
 #include "constants.h"
 
-//Initialize particle positions
+/**
+ * @brief Initialize particle positions
+ *
+ * @param pos
+ * @return int
+ */
 int initpos(double **pos) {
-  unsigned long i, x1;
+    unsigned long i, x1;
 
-  for (x1 = 0; x1 < 3; ++x1) { // three position components
+    const double centerX = 0.0;
+    const double centerY = 0.0;//Ny * dx[yIndx] / 2.;
+    const double centerZ = Nz * dx[zIndx] / 2.;
+
+    // Spread particles in 40e-6 range from 0 to cover domain
+    const double spreadY = 0.0;//31.81359646532949;
+    const double spreadZ = 0.0;
+
     for (i = 0; i < Npar; ++i) {
-      pos[x1][i] = 0.0;
+        pos[xIndx][i] = centerX;
+        pos[yIndx][i] = (2 * centerY) *
+            ((double)rand() / (RAND_MAX)) + (centerY - spreadY);
+        pos[zIndx][i] = (2 * centerZ) *
+            ((double)rand() / (RAND_MAX)) + (centerZ - spreadZ);
     }
-  }
-  // pos[0][0] = 2.0;
-  // pos[1][0] = 2.0;
-  // pos[2][0] = 2.0;
 
-  return 0;
+    return 0;
 }
 
-//Initialize particle momenta
+/**
+ * @brief Initialize particle momenta
+ *
+ * @param mom
+ * @return int
+ */
 int initmom(double **mom) {
-  unsigned long i, x1;
+    unsigned long i, x1;
 
-  for (x1 = 0; x1 < 3; ++x1) { // three position components
+    const double lowerMomTot = 0.6410483775684676;
+    const double upperMomTot = 0.8035966691084001;
+
+    const double lowerPy = 0.0; // -0.00242294;
+    const double upperPy = 0.0; // 0.00242294;
+    const double lowerPz = 0.0; // -0.00242294;
+    const double upperPz = 0.0; // 0.00242294;
+
+    double px, py, pz, momenta;
+
     for (i = 0; i < Npar; ++i) {
-      mom[x1][i] = 0.0;
-    }
-    // mom[0][0] = 1.0;
-  }
+        momenta = (upperMomTot - lowerMomTot) *
+            ((double)rand() / (RAND_MAX)) +
+            lowerMomTot;
+        py = (upperPy - lowerPy) *
+            ((double)rand() / (RAND_MAX)) + lowerPy;
+        pz = (upperPz - lowerPz) *
+            ((double)rand() / (RAND_MAX)) + lowerPz;
 
-  return 0;
+        px = sqrt(pow(momenta, 2.) - pow(py, 2.) - pow(pz, 2.));
+
+        mom[xIndx][i] = px;
+        mom[yIndx][i] = py;
+        mom[zIndx][i] = pz;
+    }
+
+    return 0;
 }
 
-//Initialize Efield
+/**
+ * @brief Initialize Efield
+ *
+ * @param Efield
+ * @return int
+ */
 int initEfield(double ****Efield) {
-  unsigned long i, j, k, x1;
+    unsigned long i, j, k, x1;
 
-  for (x1 = 0; x1 < 3; ++x1) { // three position components
-    for (i = 0; i < Nx; ++i) {
-      for (j = 0; j < Ny; ++j) {
-        for (k = 0; k < Nz; ++k) {
-          Efield[x1][i][j][k] = (1.0 * k - 2.0) * 0.0;
+    for (x1 = 0; x1 < ndims; ++x1) { // three position components
+        for (i = 0; i < Nx; ++i) {
+            for (j = 0; j < Ny; ++j) {
+                for (k = 0; k < Nz; ++k) {
+                    Efield[x1][i][j][k] = (1.0 * k - 2.0) * 0.0;
+                }
+            }
         }
-      }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
-//Initialize Bfield
-int initBfield(double ****Bfield) {
-  unsigned long i, j, k, x1;
+/**
+ * @brief Initialize Efield from a text file
+ *
+ * @param Efield
+ * @return int
+ */
+int initEfieldFromFile(double ****Efield) {
+    unsigned long i, j, k, x1;
 
-  for (x1 = 0; x1 < 3; ++x1) { // three position components
-    for (i = 0; i < Nx; ++i) {
-      for (j = 0; j < Ny; ++j) {
-        for (k = 0; k < Nz; ++k) {
-          Bfield[x1][i][j][k] = 0.0;
-          Bfield[2][i][j][k] = 1.0;
+    std::ifstream xinputFile("xfield.dat"); // Input file stream object
+    std::ifstream yinputFile("yfield.dat");
+    std::ifstream zinputFile("zfield.dat");
+
+    // Check if exists and then open the file.
+    if (xinputFile.good() && yinputFile.good() && zinputFile.good()) {
+        double xVal = 0., yVal = 0., zVal = 0.;
+        double n0_const = sqrt(n0 * 1.e-6);
+        double ef_n0_coeff = 9.613e-10;
+
+        for (i = 0; i < Nx; ++i) {
+            for (j = 0; j < Ny; ++j) {
+                xinputFile >> xVal;
+                yinputFile >> yVal;
+                // zinputFile >> zVal;
+                for (k = 0; k < Nz; ++k) {
+                    Efield[xIndx][i][j][k] = xVal / 1.e11 /
+                        ef_n0_coeff / n0_const; // convert to osiris units
+
+                    Efield[yIndx][i][j][k] = yVal / 1.e11 /
+                        ef_n0_coeff / n0_const; // convert to osiris units
+
+                    Efield[zIndx][i][j][k] = zVal / 1.e11 /
+                        ef_n0_coeff / n0_const; // convert to osiris units
+                }
+            }
         }
-      }
+
+        // Close the file.
+        xinputFile.close();
+        yinputFile.close();
+        zinputFile.close();
+
+        // Display the numbers read:
+        // std::cout << "The numbers are: " << std::endl;
+        // for (i = 0; i < Nx; ++i) {
+        //     for (j = 0; j < Ny; ++j) {
+        //         for (k = 0; k < Nz; ++k) {
+        //             std::cout << Efield[xIndx][i][j][k] << " ";
+        //         }
+        //     }
+        //     std::cout << std::endl;
+        // }
+        // std::cout << std::endl;
     }
-  }
+    else {
+        std::cout << "Error!" << std::endl;
+        exit(0);
+    }
+
+    return 0;
+}
+
+/**
+ * @brief Initialize Bfield
+ *
+ * @param Bfield
+ * @return int
+ */
+int initBfield(double ****Bfield) {
+    unsigned long i, j, k, x1;
+
+    for (x1 = 0; x1 < ndims; ++x1) { // three position components
+        for (i = 0; i < Nx; ++i) {
+            for (j = 0; j < Ny; ++j) {
+                for (k = 0; k < Nz; ++k) {
+                    Bfield[x1][i][j][k] = 0.0;
+                    // Bfield[2][i][j][k] = 1.0;
+                }
+            }
+        }
+    }
 
   return 0;
 }

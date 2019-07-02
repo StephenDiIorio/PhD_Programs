@@ -1,33 +1,50 @@
-// GLOBAL CONSTANTS
-//*****************************************************************
+/*
+  --------------------------------------------------
+  PARTRAC v1.0: 3D particle tracking code
+  AGRT 2010
+  Moderized by Stephen DiIorio 2019
+
+  Global Constants
+  --------------------------------------------------
+*/
+
 #include <math.h>
 
+static const unsigned int ndims = 3;
+static const unsigned int xIndx = 0;
+static const unsigned int yIndx = 1;
+static const unsigned int zIndx = 2;
+
 //Constants
-const double PI = acos(-1.0);
-const double e = 1.602176e-19;
-const double me = 9.10938e-31;
-const double mu0 = 4.0*PI*1e-7;
-const double c = 299792458;
+static const double PI = acos(-1.0);
+static const double e = 1.602176e-19;
+static const double me = 9.10938e-31;
+static const double mu0 = 4.0*PI*1e-7;
+static const double c = 299792458.;
 
 // particle definitions
 
 // charge to mass ratio - normalized to |e|/m_e
-const double qoverm = -1.0;
+static const double qoverm = -1.0;
 
 // number of particles
-const unsigned long Npar = 1;
+static const unsigned long Npar = 1;
 
 // Field grid size
-const unsigned long Nx = 100;
-const unsigned long Ny = 100;
-const unsigned long Nz = 100;
+static const unsigned long Nx = 250;
+static const unsigned long Ny = 250;
+static const unsigned long Nz = 3; // need to provide some buffer cells so
+                                   // so weighting stays within grid
 
-const double dx[3] = {1.0, 1.0, 1.0}; //the step size
-const double idx[3] = {1.0 / dx[0], 1.0 / dx[1], 1.0 / dx[2]}; //inverse of dx
+// Domain of -40e-6 to 40e-6 with 250 grid cells in Epoch
+// normalized Osiris units uisng n0 = 0.17863390738e26
+static const double n0 = 0.17863390738e26; // in m^-3
+static const double dx[ndims] = {0.2545087717226359, 0.2545087717226359, 0.2545087717226359};
+static const double idx[ndims] = {1.0 / dx[xIndx], 1.0 / dx[yIndx], 1.0 / dx[zIndx]}; //inverse of dx
 
 //------------------------------------------------------
 //Messages and output
-const int Ndumps = 1000;
-const int Nmessages = 10;
-const char filename[] = "data.txt";
-const char version[4] = "1.0";
+static const int Ndumps = 1000;
+static const int Nmessages = 10;
+static const char filename[9] = "data.txt";
+static const char version[4] = "1.0";

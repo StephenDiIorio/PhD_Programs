@@ -1,8 +1,11 @@
 /*
-  PARTRAC v1.0
+  --------------------------------------------------
+  PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
+  Moderized by Stephen DiIorio 2019
 
   Function list + headers
+  --------------------------------------------------
 */
 
 #include <iostream>
@@ -19,6 +22,7 @@
 int initpos(double **pos);
 int initmom(double **mom);
 int initEfield(double ****Efield);
+int initEfieldFromFile(double ****Efield);
 int initBfield(double ****Bfield);
 
 int WeightF(double ****EVec, double **parVec, double **FVec);

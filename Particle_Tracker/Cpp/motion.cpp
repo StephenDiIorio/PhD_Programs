@@ -1,7 +1,8 @@
 /*
   --------------------------------------------------
- 3D particle tracking code
+  PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
+  Moderized by Stephen DiIorio 2019
 
   Equations of motion
 
@@ -16,78 +17,97 @@
 #include "iostream"
 // dt_m allows for 1/2 step
 
-//Electric push
+/**
+ * @brief Electric push
+ *
+ * @param FVec
+ * @param momVec
+ * @param dt_m
+ */
 int pushmomentum(double **FVec, double **momVec, const double dt_m) {
-  unsigned long i, x1;
+    unsigned long i, x1;
 
-  for (x1 = 0; x1 < 3; ++x1) { // three momentum components
-    for (i = 0; i < Npar; ++i) {
-      momVec[x1][i] += FVec[x1][i] * dt_m;
+    for (x1 = 0; x1 < ndims; ++x1) { // three momentum components
+        for (i = 0; i < Npar; ++i) {
+            momVec[x1][i] += FVec[x1][i] * dt_m;
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
+/**
+ * @brief
+ *
+ * @param momVec
+ * @param parVec
+ * @param dt_m
+ */
 int pushxpos(double **momVec, double **parVec, const double dt_m) {
-  double psquared, igamma;
-  unsigned long i, x1;
+    double psquared, igamma;
+    unsigned long i, x1;
 
-  for (x1 = 0; x1 < 3; ++x1) { // three position components
-    for (i = 0; i < Npar; ++i) {
-      psquared = momVec[0][i] * momVec[0][i] + momVec[1][i] * momVec[1][i] + momVec[2][i] * momVec[2][i];
-      igamma = 1.0 / sqrt(1.0 + psquared);
-      parVec[x1][i] += momVec[x1][i] * dt_m * igamma;
+    for (x1 = 0; x1 < ndims; ++x1) { // three position components
+        for (i = 0; i < Npar; ++i) {
+            psquared = momVec[xIndx][i] * momVec[xIndx][i] + momVec[yIndx][i] * momVec[yIndx][i] + momVec[zIndx][i] * momVec[zIndx][i];
+            igamma = 1.0 / sqrt(1.0 + psquared);
+            parVec[x1][i] += momVec[x1][i] * dt_m * igamma;
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
-//Magnetic rotation
+/**
+ * @brief Magnetic rotation
+ *
+ * @param momVec
+ * @param BVec
+ * @param dt_m
+ */
 int Lorentz(double *momVec[], double *BVec[], const double dt_m) {
-  long unsigned parnum, x1;
-  double igamma, psquared, Bsquared;
+    long unsigned parnum, x1;
+    double igamma, psquared, Bsquared;
 
-  // t vector in Boris method
-  double tt[3], ttsquared;
-  // s vector in Boris method
-  double ss[3];
-  // vstar vector in Boris method
-  double vstar[3];
-  // perpendicular component of v in Boris method
-  double vperp[3];
+    // t vector in Boris method
+    double tt[ndims], ttsquared;
+    // s vector in Boris method
+    double ss[ndims];
+    // vstar vector in Boris method
+    double vstar[ndims];
+    // perpendicular component of v in Boris method
+    double vperp[ndims];
 
-  for (parnum = 0; parnum < Npar; ++parnum) {
-    Bsquared = (BVec[0][parnum] * BVec[0][parnum] + BVec[1][parnum] * BVec[1][parnum] + BVec[2][parnum] * BVec[2][parnum]);
+    for (parnum = 0; parnum < Npar; ++parnum) {
+        Bsquared = (BVec[xIndx][parnum] * BVec[xIndx][parnum] + BVec[yIndx][parnum] * BVec[yIndx][parnum] + BVec[zIndx][parnum] * BVec[zIndx][parnum]);
 
-    if (Bsquared) {
-      psquared = momVec[0][parnum] * momVec[0][parnum] + momVec[1][parnum] * momVec[1][parnum] + momVec[2][parnum] * momVec[2][parnum];
-      igamma = 1.0 / sqrt(1.0 + psquared);
-      ttsquared = 0.0;
-      for (x1 = 0; x1 < 3; ++x1) {
-        tt[x1] = BVec[x1][parnum] * dt_m * 0.5;
-        ttsquared += tt[x1] * tt[x1];
-      }
+        if (Bsquared) {
+            psquared = momVec[xIndx][parnum] * momVec[xIndx][parnum] + momVec[yIndx][parnum] * momVec[yIndx][parnum] + momVec[zIndx][parnum] * momVec[zIndx][parnum];
+            igamma = 1.0 / sqrt(1.0 + psquared);
+            ttsquared = 0.0;
+            for (x1 = 0; x1 < ndims; ++x1) {
+                tt[x1] = BVec[x1][parnum] * dt_m * 0.5;
+                ttsquared += tt[x1] * tt[x1];
+            }
 
-      for (x1 = 0; x1 < 3; ++x1) {
-        ss[x1] = 2.0 * tt[x1] / (1.0 + ttsquared);
-      }
+            for (x1 = 0; x1 < ndims; ++x1) {
+                ss[x1] = 2.0 * tt[x1] / (1.0 + ttsquared);
+            }
 
-      // calculated vperp
-      for (x1 = 0; x1 < 3; ++x1) {
-        vperp[x1] = momVec[x1][parnum] * (1.0 - BVec[x1][parnum] / sqrt(Bsquared));
-      }
+            // calculated vperp
+            for (x1 = 0; x1 < ndims; ++x1) {
+                vperp[x1] = momVec[x1][parnum] * (1.0 - BVec[x1][parnum] / sqrt(Bsquared));
+            }
 
-      //calculate vstar
-      // for efficiency, component by component
-      vstar[0] = vperp[0] + (vperp[1] * tt[2] - vperp[2] * tt[1]) * igamma;
-      vstar[1] = vperp[1] + (vperp[2] * tt[0] - vperp[0] * tt[2]) * igamma;
-      vstar[2] = vperp[2] + (vperp[0] * tt[1] - vperp[1] * tt[0]) * igamma;
-      //Finally update momentum
-      momVec[0][parnum] += (vstar[1] * ss[2] - vstar[2] * ss[1]) * igamma;
-      momVec[1][parnum] += (vstar[2] * ss[0] - vstar[0] * ss[2]) * igamma;
-      momVec[2][parnum] += (vstar[0] * ss[1] - vstar[1] * ss[0]) * igamma;
+            //calculate vstar
+            // for efficiency, component by component
+            vstar[xIndx] = vperp[xIndx] + (vperp[yIndx] * tt[zIndx] - vperp[zIndx] * tt[yIndx]) * igamma;
+            vstar[yIndx] = vperp[yIndx] + (vperp[zIndx] * tt[xIndx] - vperp[xIndx] * tt[zIndx]) * igamma;
+            vstar[zIndx] = vperp[zIndx] + (vperp[xIndx] * tt[yIndx] - vperp[yIndx] * tt[xIndx]) * igamma;
+            //Finally update momentum
+            momVec[xIndx][parnum] += (vstar[yIndx] * ss[zIndx] - vstar[zIndx] * ss[yIndx]) * igamma;
+            momVec[yIndx][parnum] += (vstar[zIndx] * ss[xIndx] - vstar[xIndx] * ss[zIndx]) * igamma;
+            momVec[zIndx][parnum] += (vstar[xIndx] * ss[yIndx] - vstar[yIndx] * ss[xIndx]) * igamma;
     }
   }
 
@@ -95,3 +115,4 @@ int Lorentz(double *momVec[], double *BVec[], const double dt_m) {
 }
 
 #endif
+//TODO:add some sort of final push for the entire distance from gas to screen

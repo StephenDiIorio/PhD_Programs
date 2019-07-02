@@ -21,4 +21,4 @@ ${EXEC} : ${OBJECTS}
 	${CC} ${CFLAGS} ${OPTFLAGS} -o ${EXEC} ${OBJECTS}
 
 %.o : %.cpp
-	$(CC) $(CF) $(INCPATH) -c $<
+	$(CC) $(CF) $(OPTFLAGS) $(INCPATH) -c $<
