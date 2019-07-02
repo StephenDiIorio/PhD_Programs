@@ -24,7 +24,7 @@ class Field(FrozenClass):
     def Weighted_Force(self, pos, nx, ny, nz, inv_step_size):
         # linear interpolation in 3d
 
-        # varaibles to check whether any of the particle still lies
+        # variables to check whether any of the particle still lies
         # within the field domain
         domain_count = 0
         domain_status = True

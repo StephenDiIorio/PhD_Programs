@@ -110,12 +110,14 @@ def pos_osiris_to_si_n0(pos_osiris, n0):
 def mom_si_to_osiris(mom_si, wp):
     """
     """
+    print("Mom conversion not implemented yet.")
     return
 
 
 def mom_osiris_to_si(mom_osiris, wp):
     """
     """
+    print("Mom conversion not implemented yet.")
     return
 
 

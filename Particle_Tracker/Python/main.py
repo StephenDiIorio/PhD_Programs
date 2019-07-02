@@ -18,7 +18,7 @@ global nx, ny, nz, step, n0
 
 
 def init_pos(npart):
-    # init to their actual physical location. the grid grid and step size
+    # init to their actual physical location. the grid and step size
     # are taken into account when we do the field interpolation
     centerx = 0.
     centery = ny * step[y_dim] / 2.
