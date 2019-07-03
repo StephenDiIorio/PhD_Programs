@@ -47,6 +47,7 @@ class ParticleCloud(FrozenClass):
         for index, part in enumerate(self.particles):
             if not part.static:
                 still_pushing = True
+                break
         self.still_push = still_pushing
         return still_pushing
 
