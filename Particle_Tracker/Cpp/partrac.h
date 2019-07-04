@@ -17,7 +17,7 @@
 int initpos(double **pos);
 int initmom(double **mom);
 int initEfield(double ****Efield);
-int initEfieldFromFile(double ****Efield);
+int initEfieldFromFile(double ****Efield, const char *xFile, const char *yFile, const char *zFile);
 int initBfield(double ****Bfield);
 
 int WeightF(double ****EVec, double **parVec, double **FVec);
