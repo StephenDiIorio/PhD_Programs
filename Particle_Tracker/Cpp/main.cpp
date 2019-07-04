@@ -2,7 +2,7 @@
   --------------------------------------------------
   PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
-  Moderized by Stephen DiIorio 2019
+  Modernized by Stephen DiIorio 2019
 
   ********* PARTRAC *****************
   This is a  relativisitic  particle tracking code
@@ -51,8 +51,8 @@ int main(int argnum, char **argstr) {
     }
 
     // Field cubes - 3 dimensional (the '3' here refers to Ex, Ey, Ez at every coordinate space)
-    double ****Efield;
-    double ****Bfield;
+    static double ****Efield;
+    static double ****Bfield;
     Efield = new double ***[ndims];
     Bfield = new double ***[ndims];
     for (x1 = 0; x1 < ndims; ++x1) {
@@ -78,15 +78,40 @@ int main(int argnum, char **argstr) {
     WeightF(Efield, pos, fce);
     WeightF(Bfield, pos, bpa);
 
-    const double tmax = 150.;//sqrt(2.0) * 2.0 * PI;
+    const double tmax = 125;//sqrt(2.0) * 2.0 * PI;
     double t = 0;
     const double dt = 0.01;
 
+    const double dist = 143002.;
+
+    bool outsideDomain;
+
+    //----------------------------------------
+    // Arrays and counters for data dumps
+    uint t_count = 0;
+    static double *t_array;
+    t_array = new double[(uint)(tmax / dt)];
+
+    static double ***pos_data;
+    pos_data = new double **[(uint)(tmax / dt)];
+    for (i = 0; i < (uint)(tmax / dt); ++i) {
+        pos_data[i] = new double *[Npar];
+        for (j = 0; j < Npar; ++j) {
+            pos_data[i][j] = new double [ndims];
+        }
+    }
+
+    //----------------------------------------
     // Main loop
     while (t<=tmax) {
         //Weight Electric fields to particles
-        WeightF(Efield, pos, fce);
-        WeightF(Bfield, pos, bpa);
+        outsideDomain = WeightF(Efield, pos, fce);
+        outsideDomain = WeightF(Bfield, pos, bpa);
+
+        if (outsideDomain) {
+            printf("Breaking time loop. All particles are out of box. t=%f\n", t);
+            break;
+        }
 
         // Equations of motion
         pushmomentum(fce, mom, dt * 0.5);
@@ -94,28 +119,39 @@ int main(int argnum, char **argstr) {
         pushmomentum(fce, mom, dt * 0.5);
         pushxpos(mom, pos, dt);
 
-        fprintf(outFile, "%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n", t, pos[0][0], pos[1][0], pos[2][0], mom[0][0], mom[1][0], mom[2][0], fce[0][0], fce[1][0], fce[2][0]);
+        // Store data
+        t_array[t_count] = t;
+        for (i = 0; i < Npar; ++i) {
+            for (x1 = 0; x1 < ndims; ++x1) {
+                pos_data[t_count][i][x1] = pos[x1][i];
+            }
+        }
+        ++t_count;
 
         t += dt;
     }
 
-    // // three position components
-    // for (i = 0; i < Nx; ++i) {
-    //     for (j = 0; j < Ny; ++j) {
-    //         for (k = 0; k < Nz; ++k) {
-    //             for (x1 = 0; x1 < 3; ++x1) {
-    //                 printf("component=%i, pos=%i,%i,%i E=%f\n", (int)x1, (int)i, (int)j, (int)k, Bfield[x1][i][j][k]);
-    //             }
-    //         }
-    //     }
-    // }
+    printf("Were all the particles outside the domain?: %i (0=No, 1=Yes)\n", outsideDomain);
 
-    // long unsigned parnum;
-    // for (x1 = 0; x1 < 3; ++x1) {
-    //     for (parnum = 0; parnum < Npar; ++parnum) {
-    //         printf("component=%i, number=%i, pos=%f, mom=%f, fce=%f\n", (int)x1, (int)parnum, pos[x1][parnum], mom[x1][parnum], fce[x1][parnum]);
-    //     }
-    // }
+    // Final push to target distance and data dump
+    singlepushxpos(mom, pos, dist);
+    t_array[t_count] = t;
+    for (i = 0; i < Npar; ++i) {
+        for (x1 = 0; x1 < ndims; ++x1) {
+            pos_data[t_count][i][x1] = pos[x1][i];
+        }
+    }
+    ++t_count;
+
+    //----------------------------------------
+    // Write data to file
+    for (i = 0; i < t_count; ++i) {
+        fprintf(outFile, "%e", t_array[i]);
+        for (j = 0; j < Npar; ++j) {
+            fprintf(outFile, "\t%e\t%e\t%e", pos_data[i][j][xIndx], pos_data[i][j][yIndx], pos_data[i][j][zIndx]);
+        }
+        fprintf(outFile, "\n");
+    }
 
     //----------------------------------------
     // Finish
@@ -127,6 +163,15 @@ int main(int argnum, char **argstr) {
 
     //----------------------------------------
     // Clean up
+    for (i = 0; i < (uint) (tmax / dt); ++i) {
+        for (j = 0; j < Npar; ++j) {
+            delete[] pos_data[i][j];
+        }
+        delete[] pos_data[i];
+    }
+    delete[] pos_data;
+    delete[] t_array;
+
     for (x1 = 0; x1 < ndims; ++x1) {
         for (i = 0; i < Nx; ++i) {
             for (j = 0; j < Ny; ++j) {
