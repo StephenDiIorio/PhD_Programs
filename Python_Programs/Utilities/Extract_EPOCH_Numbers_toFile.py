@@ -131,11 +131,11 @@ def main():
     for i, file in enumerate(e_file_list):
         data = sdf.read(file)
 
-        with open('x' + i +'_field.dat', mode='w') as f:
+        with open('x' + str(i) +'_field.dat', mode='w') as f:
             data.__dict__[ex_varname].data.astype('float64', order='F').tofile(f, sep='\t')
-        with open('y' + i + '_field.dat', mode='w') as f:
+        with open('y' + str(i) + '_field.dat', mode='w') as f:
             data.__dict__[ey_varname].data.astype('float64', order='F').tofile(f, sep='\t')
-        with open('z' + i + '_field.dat', mode='w') as f:
+        with open('z' + str(i) + '_field.dat', mode='w') as f:
             data.__dict__[ez_varname].data.astype('float64', order='F').tofile(f, sep='\t')
 
     return
