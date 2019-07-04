@@ -20,9 +20,9 @@ zlabel('Z (m)')
 set(gca,'FontSize',20)
 
 figure(2);
-stuff = data(end, 3:3:size(data,2));
-stuff = ((stuff / 100) * n0_coeff) / sqrt(n0);
-histogram(stuff, 50)
+final_plane = data(end, 3:3:size(data,2));
+final_plane = ((final_plane / 100) * n0_coeff) / sqrt(n0);
+histogram(final_plane, 50)
 xlabel('Y (m)')
 ylabel('Number of Hits')
 set(gca,'FontSize',20)
