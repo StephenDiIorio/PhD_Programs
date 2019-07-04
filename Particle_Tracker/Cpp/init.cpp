@@ -2,7 +2,7 @@
   --------------------------------------------------
   PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
-  Moderized by Stephen DiIorio 2019
+  Modernized by Stephen DiIorio 2019
 
   Initialization functions for PARTRAC
   --------------------------------------------------
@@ -11,7 +11,6 @@
 #ifndef PARTRAC_INIT
 #define PARTRAC_INIT
 #include <stdlib.h>
-#include <iostream>
 #include <fstream>
 #include <math.h>
 
@@ -27,19 +26,18 @@ int initpos(double **pos) {
     unsigned long i, x1;
 
     const double centerX = 0.0;
-    const double centerY = 0.0;//Ny * dx[yIndx] / 2.;
+    const double centerY = Ny * dx[yIndx] / 2.;
     const double centerZ = Nz * dx[zIndx] / 2.;
 
     // Spread particles in 40e-6 range from 0 to cover domain
-    const double spreadY = 0.0;//31.81359646532949;
+    const double spreadY = 31.81359646532949;
     const double spreadZ = 0.0;
 
     for (i = 0; i < Npar; ++i) {
         pos[xIndx][i] = centerX;
         pos[yIndx][i] = (2 * centerY) *
             ((double)rand() / (RAND_MAX)) + (centerY - spreadY);
-        pos[zIndx][i] = (2 * centerZ) *
-            ((double)rand() / (RAND_MAX)) + (centerZ - spreadZ);
+        pos[zIndx][i] = centerZ;//(2 * centerZ) * ((double)rand() / (RAND_MAX)) + (centerZ - spreadZ);
     }
 
     return 0;
@@ -148,19 +146,18 @@ int initEfieldFromFile(double ****Efield) {
         zinputFile.close();
 
         // Display the numbers read:
-        // std::cout << "The numbers are: " << std::endl;
+        // printf("The numbers are:\n");
         // for (i = 0; i < Nx; ++i) {
         //     for (j = 0; j < Ny; ++j) {
         //         for (k = 0; k < Nz; ++k) {
-        //             std::cout << Efield[xIndx][i][j][k] << " ";
+        //             printf("%f ", Efield[xIndx][i][j][k]);
         //         }
         //     }
-        //     std::cout << std::endl;
+        //     printf("\n");
         // }
-        // std::cout << std::endl;
-    }
-    else {
-        std::cout << "Error!" << std::endl;
+        // printf("\n");
+    } else {
+        printf("Error!\n");
         exit(0);
     }
 
