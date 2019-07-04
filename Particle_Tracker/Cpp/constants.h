@@ -43,8 +43,15 @@ static const double dx[ndims] = {0.2545087717226359, 0.2545087717226359, 0.25450
 static const double idx[ndims] = {1.0 / dx[xIndx], 1.0 / dx[yIndx], 1.0 / dx[zIndx]}; //inverse of dx
 
 //------------------------------------------------------
-//Messages and output
+//Messages, input, and output
 static const int Ndumps = 1000;
 static const int Nmessages = 10;
-static const char filename[9] = "data.txt";
+
+static char xInput[15];
+static char yInput[15];
+static char zInput[15];
+static const unsigned int numFiles = 401; //+1 to account for t=0
+
+static const char trajFilename[9] = "traj.txt";
+static const char sliceFilename[10] = "slice.txt";
 static const char version[4] = "1.0";
