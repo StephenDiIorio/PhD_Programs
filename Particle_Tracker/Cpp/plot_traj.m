@@ -1,32 +1,49 @@
 clear;
 
-data = importdata('data.txt','\t');
+trajData = importdata('traj.txt','\t');
+sliceData = importdata('slice.txt','\t');
 
 n0 = 0.17863390738e26 * 1e-6;
 n0_coeff = 531409.3265537234;
 n0_const = n0_coeff / (100 * sqrt(n0));
-figure(1);
-hold on;
+trajData = trajData * n0_const;
+sliceData = sliceData * n0_const;
 
-for i = 2 : 3 : size(data,2)
-    plot3(data(:,i) * n0_const,...
-        data(:,i+1) * n0_const,...
-        data(:,i+2) * n0_const);
+% figure(1);
+% hold on;
+% for i = 2 : 3 : size(trajData,2)
+%     plot3(trajData(:,i),...
+%         trajData(:,i+1),...
+%         trajData(:,i+2);
+% end
+% hold off;
+% xlabel('X (m)')
+% ylabel('Y (m)')
+% zlabel('Z (m)')
+% set(gca,'FontSize',20)
+% 
+% figure(2);
+% final_plane = trajData(end, 3:3:size(trajData,2));
+% histogram(final_plane, 100)
+% xlabel('Y (m)')
+% ylabel('Number of Hits')
+% set(gca,'FontSize',20)
+
+sliceHeatMap = [];
+for i = 1:size(sliceData,1)
+    h = histogram(sliceData(i,:), 100);
+    sliceHeatMap = [sliceHeatMap; h.Values];
 end
-hold off;
-xlabel('X (m)')
+[minVal, maxVal] = bounds(sliceData,'all');
+
+figure(3)
+imagesc(linspace(0,100,size(sliceHeatMap,1)),...
+    linspace(minVal, maxVal, h.NumBins),...
+    sliceHeatMap')
+set(gca, 'Ydir', 'normal')
+xlabel('t (ps)')
 ylabel('Y (m)')
-zlabel('Z (m)')
 set(gca,'FontSize',20)
-
-figure(2);
-final_plane = data(end, 3:3:size(data,2));
-final_plane = ((final_plane / 100) * n0_coeff) / sqrt(n0);
-histogram(final_plane, 50)
-xlabel('Y (m)')
-ylabel('Number of Hits')
-set(gca,'FontSize',20)
-
 
 function map = coolwarm(m)
 %COOLWARM cool-warm color map
