@@ -109,12 +109,12 @@ int initEfield(double ****Efield) {
  * @param Efield
  * @return int
  */
-int initEfieldFromFile(double ****Efield) {
+int initEfieldFromFile(double ****Efield, const char *xFile, const char *yFile, const char *zFile) {
     unsigned long i, j, k, x1;
 
-    std::ifstream xinputFile("xfield.dat"); // Input file stream object
-    std::ifstream yinputFile("yfield.dat");
-    std::ifstream zinputFile("zfield.dat");
+    std::ifstream xinputFile(xFile);//"xfield.dat"); // Input file stream object
+    std::ifstream yinputFile(yFile);//"yfield.dat");
+    std::ifstream zinputFile(zFile);//"zfield.dat");
 
     // Check if exists and then open the file.
     if (xinputFile.good() && yinputFile.good() && zinputFile.good()) {
@@ -157,7 +157,7 @@ int initEfieldFromFile(double ****Efield) {
         // }
         // printf("\n");
     } else {
-        printf("Error!\n");
+        printf("Error reading file!\n");
         exit(0);
     }
 
