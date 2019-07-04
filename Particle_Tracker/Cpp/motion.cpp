@@ -2,7 +2,7 @@
   --------------------------------------------------
   PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
-  Moderized by Stephen DiIorio 2019
+  Modernized by Stephen DiIorio 2019
 
   Equations of motion
 
@@ -14,8 +14,6 @@
 #ifndef PARTRAC_MOTION
 #define PARTRAC_MOTION
 #include "constants.h"
-#include "iostream"
-// dt_m allows for 1/2 step
 
 /**
  * @brief Electric push
@@ -114,5 +112,19 @@ int Lorentz(double *momVec[], double *BVec[], const double dt_m) {
   return 0;
 }
 
+int singlepushxpos(double **momVec, double **parVec, const double dist) {
+    unsigned long i;
+    double t;
+
+    for (i = 0; i < Npar; ++i) {
+        t = (dist - parVec[xIndx][i]) / momVec[xIndx][i];
+
+        parVec[xIndx][i] += momVec[xIndx][i] * t;
+        parVec[yIndx][i] += momVec[yIndx][i] * t;
+        parVec[zIndx][i] += momVec[zIndx][i] * t;
+    }
+
+    return 0;
+}
+
 #endif
-//TODO:add some sort of final push for the entire distance from gas to screen
