@@ -2,7 +2,7 @@
   --------------------------------------------------
   PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
-  Moderized by Stephen DiIorio 2019
+  Modernized by Stephen DiIorio 2019
 
   Weighting routines
   conditions
@@ -11,7 +11,6 @@
 
 #ifndef PARTRAC_WEIGHTING
 #define PARTRAC_WEIGHTING
-#include <iostream>
 #include "constants.h"
 
 /**
@@ -20,11 +19,13 @@
  * @param EVec Field matrix (E or B) to interpolate
  * @param parVec matrix containing the position of particles
  * @param FVec Interpolated force matrix to fill
+ * @return int Whether or not all of the particles are outside the electric or magnetic field array
  */
 int WeightF(double ****EVec, double **parVec, double **FVec) {
-    static unsigned long parnum, x1, x2, l, m, n, ii[3];
-    static double weight[3];
-    static double volumes[2][2][2]; // for volume weighting
+    bool outsideDomain = true;
+    unsigned long parnum, x1, x2, l, m, n, ii[3];
+    double weight[3];
+    double volumes[2][2][2]; // for volume weighting
 
     for (x1 = 0; x1 < ndims; ++x1) {
         for (parnum = 0; parnum < Npar; ++parnum) {
@@ -53,11 +54,9 @@ int WeightF(double ****EVec, double **parVec, double **FVec) {
                 for (m = 0; m < 2; ++m) {
                     for (n = 0; n < 2; ++n) {
                         if (((ii[0] + l) < Nx) && ((ii[1] + m) < Ny) && ((ii[2] + n) < Nz) && ((ii[0] + l) >= 0) && ((ii[1] + m) >= 0) && ((ii[2] + n) >= 0)) {
-                            // std::cout << "Inside of domain" << std::endl;
                             FVec[x1][parnum] += volumes[l][m][n] * EVec[x1][ii[0] + l][ii[1] + m][ii[2] + n];
-                        }// else {
-                        //    std::cout << "Outside of domain" << std::endl;
-                        // }
+                            outsideDomain = false;
+                        }
                     }
                 }
             }
@@ -66,7 +65,7 @@ int WeightF(double ****EVec, double **parVec, double **FVec) {
         }
     }
 
-    return 0;
+    return outsideDomain;
 }
 
 #endif
