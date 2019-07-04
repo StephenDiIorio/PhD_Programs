@@ -2,7 +2,7 @@
   --------------------------------------------------
   PARTRAC v1.0: 3D particle tracking code
   AGRT 2010
-  Moderized by Stephen DiIorio 2019
+  Modernized by Stephen DiIorio 2019
 
   Global Constants
   --------------------------------------------------
@@ -28,7 +28,7 @@ static const double c = 299792458.;
 static const double qoverm = -1.0;
 
 // number of particles
-static const unsigned long Npar = 1;
+static const unsigned long Npar = 1000;
 
 // Field grid size
 static const unsigned long Nx = 250;
