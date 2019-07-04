@@ -4,16 +4,28 @@ data = importdata('data.txt','\t');
 
 n0 = 0.17863390738e26 * 1e-6;
 n0_coeff = 531409.3265537234;
+n0_const = n0_coeff / (100 * sqrt(n0));
 figure(1);
-plot3(((data(:,2) / 100) * n0_coeff) / sqrt(n0),...
-    ((data(:,3) / 100) * n0_coeff) / sqrt(n0),...
-    ((data(:,4) / 100) * n0_coeff) / sqrt(n0));
+hold on;
+
+for i = 2 : 3 : size(data,2)
+    plot3(data(:,i) * n0_const,...
+        data(:,i+1) * n0_const,...
+        data(:,i+2) * n0_const);
+end
+hold off;
 xlabel('X (m)')
 ylabel('Y (m)')
 zlabel('Z (m)')
-% title('\delta n / n_{0}')
-% set(gca,'FontSize',20)
+set(gca,'FontSize',20)
 
+figure(2);
+stuff = data(end, 3:3:size(data,2));
+stuff = ((stuff / 100) * n0_coeff) / sqrt(n0);
+histogram(stuff, 50)
+xlabel('Y (m)')
+ylabel('Number of Hits')
+set(gca,'FontSize',20)
 
 
 function map = coolwarm(m)
