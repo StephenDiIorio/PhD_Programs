@@ -28,7 +28,7 @@ static const double c = 299792458.;
 static const double qoverm = -1.0;
 
 // number of particles
-static const unsigned long Npar = 5000;
+static const unsigned long Npar = 10000;
 
 // Field grid size
 static const unsigned long Nx = 250;
@@ -52,7 +52,7 @@ static const int negTimeOffset = 40;
 static char xInput[15];
 static char yInput[15];
 static char zInput[15];
-static const int numFiles = 2;//401; //+1 to account for t=0
+static const int numFiles = 401; //+1 to account for t=0
 
 static const char trajFilename[9] = "traj.txt";
 static const char sliceFilename[10] = "slice.txt";

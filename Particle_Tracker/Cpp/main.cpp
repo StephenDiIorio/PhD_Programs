@@ -22,11 +22,12 @@
 int main(int argnum, char **argstr) {
     unsigned long i, j, x1;
     long f;
-    const double tmax = 125; //sqrt(2.0) * 2.0 * PI;
+    const double tmax = 200;
     double t = 0;
     const double dt = 0.01;
     const double dist = 143002.;
     bool outsideDomain;
+    const unsigned long t_array_size = (unsigned long)(tmax / dt) + 2; // +2 for final time step and for single push after loop
 
     double start_time = clock();
 
@@ -45,11 +46,11 @@ int main(int argnum, char **argstr) {
     // Arrays and counters for data dumps
     unsigned long t_count;
     static double *t_array;
-    t_array = new double[(unsigned long)(tmax / dt) + 1];
+    t_array = new double[t_array_size];
 
     static double ***pos_data;
-    pos_data = new double **[(unsigned long)(tmax / dt) + 1];
-    for (i = 0; i < (unsigned long)(tmax / dt) + 1; ++i) {
+    pos_data = new double **[t_array_size];
+    for (i = 0; i < t_array_size; ++i) {
         pos_data[i] = new double *[Npar];
         for (j = 0; j < Npar; ++j) {
             pos_data[i][j] = new double [ndims];
@@ -106,57 +107,55 @@ int main(int argnum, char **argstr) {
         initpos(pos);
         initmom(mom);
 
+        t = 0;
+        t_count = 0;
         //initialize grids
         if (f < 0) {
-            initEfield(Efield);
+            printf("Pre field sim\n");
         } else {
+            printf("File sim\n");
             sprintf(xInput, "x%lu_field.dat", f);
             sprintf(yInput, "y%lu_field.dat", f);
             sprintf(zInput, "z%lu_field.dat", f);
 
             initEfieldFromFile(Efield, xInput, yInput, zInput);
-        }
-
-        initBfield(Bfield);
-        outsideDomain = WeightF(Efield, pos, fce);
-        outsideDomain = WeightF(Bfield, pos, bpa);
-
-        t = 0;
-        t_count = 0;
-
-        //----------------------------------------
-        // Main loop
-        while (t<=tmax) {
-            //Weight Electric fields to particles
+            initBfield(Bfield);
             outsideDomain = WeightF(Efield, pos, fce);
             outsideDomain = WeightF(Bfield, pos, bpa);
 
-            if (f >= 0) {
-                if (outsideDomain) {
-                    printf("Breaking time loop. All particles are out of box. t=%f\n", t);
+            //----------------------------------------
+            // Main loop
+            while (t <= tmax) {
+                //Weight Electric fields to particles
+                outsideDomain = WeightF(Efield, pos, fce);
+                outsideDomain = WeightF(Bfield, pos, bpa);
+
+                if (f >= 0 and outsideDomain) {
+                    printf("Breaking time loop. All particles are out of box.\n");
                     break;
                 }
-            }
 
-            // Equations of motion
-            pushmomentum(fce, mom, dt * 0.5);
-            Lorentz(mom, bpa, dt);
-            pushmomentum(fce, mom, dt * 0.5);
-            pushxpos(mom, pos, dt);
+                // Equations of motion
+                pushmomentum(fce, mom, dt * 0.5);
+                Lorentz(mom, bpa, dt);
+                pushmomentum(fce, mom, dt * 0.5);
+                pushxpos(mom, pos, dt);
 
-            // Store data
-            t_array[t_count] = t;
-            for (i = 0; i < Npar; ++i) {
-                for (x1 = 0; x1 < ndims; ++x1) {
-                    pos_data[t_count][i][x1] = pos[x1][i];
+                // Store data
+                t_array[t_count] = t;
+                for (i = 0; i < Npar; ++i) {
+                    for (x1 = 0; x1 < ndims; ++x1) {
+                        pos_data[t_count][i][x1] = pos[x1][i];
+                    }
                 }
+                ++t_count;
+
+                t += dt;
             }
-            ++t_count;
 
-            t += dt;
+            printf("Finished with t=%f\n", t - dt);
+            printf("Were all the particles outside the domain?: %i (0=No, 1=Yes)\n", outsideDomain);
         }
-
-        printf("Were all the particles outside the domain?: %i (0=No, 1=Yes)\n", outsideDomain);
 
         // Final push to target distance and data dump
         singlepushxpos(mom, pos, dist);
@@ -174,7 +173,7 @@ int main(int argnum, char **argstr) {
     }
 
     //----------------------------------------
-    // Write data to file
+    // Write last sim traj data to file
     for (i = 0; i < t_count; ++i) {
         fprintf(trajOutFile, "%e", t_array[i]);
         for (j = 0; j < Npar; ++j) {
@@ -183,6 +182,7 @@ int main(int argnum, char **argstr) {
         fprintf(trajOutFile, "\n");
     }
 
+    // Write final pos of each particle for each time step
     for (f = 0; f < numFiles + negTimeOffset; ++f) {
         for (i = 0; i < Npar; ++i) {
             fprintf(sliceOutFile, "%f\t", finalYPos[f][i]);
@@ -201,7 +201,7 @@ int main(int argnum, char **argstr) {
 
     //----------------------------------------
     // Clean up
-    for (i = 0; i < (unsigned long)(tmax / dt) + 1; ++i) {
+    for (i = 0; i < t_array_size; ++i) {
         for (j = 0; j < Npar; ++j) {
             delete[] pos_data[i][j];
         }
