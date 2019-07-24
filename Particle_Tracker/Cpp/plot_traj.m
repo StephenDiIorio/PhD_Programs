@@ -37,12 +37,15 @@ end
 [minVal, maxVal] = bounds(sliceData,'all');
 
 figure(3)
+clim = [0 200];
 imagesc(linspace(0,100,size(sliceHeatMap,1)),...
     linspace(minVal, maxVal, h.NumBins),...
-    sliceHeatMap')
+    sliceHeatMap', clim)
 set(gca, 'Ydir', 'normal')
 xlabel('t (ps)')
 ylabel('Y (m)')
+c = colorbar;
+c.Label.String = 'Electron Count';
 set(gca,'FontSize',20)
 
 function map = coolwarm(m)
