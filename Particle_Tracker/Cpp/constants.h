@@ -47,10 +47,12 @@ static const double idx[ndims] = {1.0 / dx[xIndx], 1.0 / dx[yIndx], 1.0 / dx[zIn
 static const int Ndumps = 1000;
 static const int Nmessages = 10;
 
+static const int negTimeOffset = 40;
+
 static char xInput[15];
 static char yInput[15];
 static char zInput[15];
-static const unsigned int numFiles = 401; //+1 to account for t=0
+static const int numFiles = 2;//401; //+1 to account for t=0
 
 static const char trajFilename[9] = "traj.txt";
 static const char sliceFilename[10] = "slice.txt";

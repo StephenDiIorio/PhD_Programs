@@ -20,7 +20,8 @@
 #include "partrac.h"
 
 int main(int argnum, char **argstr) {
-    unsigned long i, j, x1, f;
+    unsigned long i, j, x1;
+    long f;
     const double tmax = 125; //sqrt(2.0) * 2.0 * PI;
     double t = 0;
     const double dt = 0.01;
@@ -44,11 +45,11 @@ int main(int argnum, char **argstr) {
     // Arrays and counters for data dumps
     unsigned long t_count;
     static double *t_array;
-    t_array = new double[(unsigned long)(tmax / dt)];
+    t_array = new double[(unsigned long)(tmax / dt) + 1];
 
     static double ***pos_data;
-    pos_data = new double **[(unsigned long)(tmax / dt)];
-    for (i = 0; i < (unsigned long)(tmax / dt); ++i) {
+    pos_data = new double **[(unsigned long)(tmax / dt) + 1];
+    for (i = 0; i < (unsigned long)(tmax / dt) + 1; ++i) {
         pos_data[i] = new double *[Npar];
         for (j = 0; j < Npar; ++j) {
             pos_data[i][j] = new double [ndims];
@@ -56,8 +57,8 @@ int main(int argnum, char **argstr) {
     }
 
     static double **finalYPos;
-    finalYPos = new double *[numFiles];
-    for (f = 0; f < numFiles; ++f) {
+    finalYPos = new double *[numFiles + negTimeOffset];
+    for (f = 0; f < numFiles + negTimeOffset; ++f) {
         finalYPos[f] = new double [Npar];
     }
 
@@ -100,17 +101,22 @@ int main(int argnum, char **argstr) {
     // NOTE: Even if input files are same, will get different results
     // becuase of rand() in pos initialization. Mitigate this by calling
     // srand(1) in initpos.
-    for (f = 0; f < numFiles; ++f) {
-        sprintf(xInput, "x%lu_field.dat", f);
-        sprintf(yInput, "y%lu_field.dat", f);
-        sprintf(zInput, "z%lu_field.dat", f);
-
+    for (f = -negTimeOffset; f < numFiles; ++f) {
         // initialize particles
         initpos(pos);
         initmom(mom);
 
         //initialize grids
-        initEfieldFromFile(Efield, xInput, yInput, zInput);
+        if (f < 0) {
+            initEfield(Efield);
+        } else {
+            sprintf(xInput, "x%lu_field.dat", f);
+            sprintf(yInput, "y%lu_field.dat", f);
+            sprintf(zInput, "z%lu_field.dat", f);
+
+            initEfieldFromFile(Efield, xInput, yInput, zInput);
+        }
+
         initBfield(Bfield);
         outsideDomain = WeightF(Efield, pos, fce);
         outsideDomain = WeightF(Bfield, pos, bpa);
@@ -125,9 +131,11 @@ int main(int argnum, char **argstr) {
             outsideDomain = WeightF(Efield, pos, fce);
             outsideDomain = WeightF(Bfield, pos, bpa);
 
-            if (outsideDomain) {
-                printf("Breaking time loop. All particles are out of box. t=%f\n", t);
-                break;
+            if (f >= 0) {
+                if (outsideDomain) {
+                    printf("Breaking time loop. All particles are out of box. t=%f\n", t);
+                    break;
+                }
             }
 
             // Equations of motion
@@ -161,7 +169,7 @@ int main(int argnum, char **argstr) {
         ++t_count;
 
         for (i = 0; i < Npar; ++i) {
-            finalYPos[f][i] = pos[yIndx][i];
+            finalYPos[f + negTimeOffset][i] = pos[yIndx][i];
         }
     }
 
@@ -175,7 +183,7 @@ int main(int argnum, char **argstr) {
         fprintf(trajOutFile, "\n");
     }
 
-    for (f = 0; f < numFiles; ++f) {
+    for (f = 0; f < numFiles + negTimeOffset; ++f) {
         for (i = 0; i < Npar; ++i) {
             fprintf(sliceOutFile, "%f\t", finalYPos[f][i]);
         }
@@ -193,7 +201,7 @@ int main(int argnum, char **argstr) {
 
     //----------------------------------------
     // Clean up
-    for (i = 0; i < (uint) (tmax / dt); ++i) {
+    for (i = 0; i < (unsigned long)(tmax / dt) + 1; ++i) {
         for (j = 0; j < Npar; ++j) {
             delete[] pos_data[i][j];
         }
@@ -202,7 +210,7 @@ int main(int argnum, char **argstr) {
     delete[] pos_data;
     delete[] t_array;
 
-    for (f = 0; f < numFiles; ++f) {
+    for (f = 0; f < numFiles + negTimeOffset; ++f) {
         delete[] finalYPos[f];
     }
     delete[] finalYPos;

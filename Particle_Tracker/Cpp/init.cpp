@@ -30,7 +30,7 @@ int initpos(double **pos) {
     const double centerZ = Nz * dx[zIndx] / 2.;
 
     // Spread particles in 40e-6 range from 0 to cover domain
-    const double spreadY = 31.81359646532949;
+    const double spreadY = 31.81359646532949 * 4.;
     const double spreadZ = 0.0;
 
     for (i = 0; i < Npar; ++i) {
@@ -94,7 +94,7 @@ int initEfield(double ****Efield) {
         for (i = 0; i < Nx; ++i) {
             for (j = 0; j < Ny; ++j) {
                 for (k = 0; k < Nz; ++k) {
-                    Efield[x1][i][j][k] = (1.0 * k - 2.0) * 0.0;
+                    Efield[x1][i][j][k] = 0.0;
                 }
             }
         }
@@ -112,9 +112,9 @@ int initEfield(double ****Efield) {
 int initEfieldFromFile(double ****Efield, const char *xFile, const char *yFile, const char *zFile) {
     unsigned long i, j, k, x1;
 
-    std::ifstream xinputFile(xFile);//"xfield.dat"); // Input file stream object
-    std::ifstream yinputFile(yFile);//"yfield.dat");
-    std::ifstream zinputFile(zFile);//"zfield.dat");
+    std::ifstream xinputFile(xFile); // Input file stream object
+    std::ifstream yinputFile(yFile);
+    std::ifstream zinputFile(zFile);
 
     // Check if exists and then open the file.
     if (xinputFile.good() && yinputFile.good() && zinputFile.good()) {
