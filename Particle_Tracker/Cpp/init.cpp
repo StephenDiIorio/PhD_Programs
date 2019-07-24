@@ -31,12 +31,15 @@ int initpos(double **pos) {
 
     // Spread particles in 40e-6 range from 0 to cover domain
     const double spreadY = 31.81359646532949 * 4.;
+    const double lowerY = centerY - spreadY;
+    const double upperY = centerY + spreadY;
+
     const double spreadZ = 0.0;
 
     for (i = 0; i < Npar; ++i) {
         pos[xIndx][i] = centerX;
-        pos[yIndx][i] = (2 * centerY) *
-            ((double)rand() / (RAND_MAX)) + (centerY - spreadY);
+        pos[yIndx][i] = (upperY - lowerY) *
+            ((double)rand() / (RAND_MAX)) + lowerY;
         pos[zIndx][i] = centerZ;//(2 * centerZ) * ((double)rand() / (RAND_MAX)) + (centerZ - spreadZ);
     }
 
@@ -178,7 +181,6 @@ int initBfield(double ****Bfield) {
             for (j = 0; j < Ny; ++j) {
                 for (k = 0; k < Nz; ++k) {
                     Bfield[x1][i][j][k] = 0.0;
-                    // Bfield[2][i][j][k] = 1.0;
                 }
             }
         }
