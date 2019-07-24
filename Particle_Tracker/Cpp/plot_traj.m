@@ -1,12 +1,12 @@
 clear;
 
-trajData = importdata('traj.txt','\t');
-sliceData = importdata('slice.txt','\t');
+% trajData = importdata('traj.txt','\t');
+sliceData = importdata('slice_laminar.txt','\t');
 
 n0 = 0.17863390738e26 * 1e-6;
 n0_coeff = 531409.3265537234;
 n0_const = n0_coeff / (100 * sqrt(n0));
-trajData = trajData * n0_const;
+% trajData = trajData * n0_const;
 sliceData = sliceData * n0_const;
 
 % figure(1);
@@ -14,7 +14,7 @@ sliceData = sliceData * n0_const;
 % for i = 2 : 3 : size(trajData,2)
 %     plot3(trajData(:,i),...
 %         trajData(:,i+1),...
-%         trajData(:,i+2);
+%         trajData(:,i+2));
 % end
 % hold off;
 % xlabel('X (m)')
@@ -44,6 +44,7 @@ imagesc(linspace(0,100,size(sliceHeatMap,1)),...
 set(gca, 'Ydir', 'normal')
 xlabel('t (ps)')
 ylabel('Y (m)')
+title('p_{y} = \pm 0 eV (Laminar Beam)')
 c = colorbar;
 c.Label.String = 'Electron Count';
 set(gca,'FontSize',20)
@@ -61,8 +62,8 @@ function map = coolwarm(m)
 %   Colormap is based on the colors used by the freeware program Paraview.
 %   The color table used here is CoolWarmUChar33.csv, from
 %   http://www.sandia.gov/~kmorel/documents/ColorMaps/
-%   Reference: Moreland, Kenneth, 2009, Diverging Color Maps for Scientific 
-%   Visualization, in Proceedings of the 5th International Symposium on 
+%   Reference: Moreland, Kenneth, 2009, Diverging Color Maps for Scientific
+%   Visualization, in Proceedings of the 5th International Symposium on
 %   Visual Computing.
 %   The Matlab code is after haxby.m by Kelsey Jordahl, Marymount Manhattan
 %   College.
@@ -608,7 +609,7 @@ cm = [[  5.03832136e-02,   2.98028976e-02,   5.27974883e-01]
        [  9.44151742e-01,   9.61916487e-01,   1.46860789e-01]
        [  9.41896120e-01,   9.68589814e-01,   1.40955606e-01]
        [  9.40015097e-01,   9.75158357e-01,   1.31325517e-01]];
-   
+
 if nargin < 1
     cm_data = cm;
 else
@@ -617,6 +618,6 @@ else
     cm_data=interp1(linspace(0,1,size(cm,1)),hsv,linspace(0,1,m));
     cm_data(cm_data(:,1)>1,1)=cm_data(cm_data(:,1)>1,1)-1;
     cm_data=hsv2rgb(cm_data);
-  
+
 end
 end
