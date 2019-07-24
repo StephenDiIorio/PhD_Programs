@@ -28,7 +28,7 @@ static const double c = 299792458.;
 static const double qoverm = -1.0;
 
 // number of particles
-static const unsigned long Npar = 1000;
+static const unsigned long Npar = 5000;
 
 // Field grid size
 static const unsigned long Nx = 250;
