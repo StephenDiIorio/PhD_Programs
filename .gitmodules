@@ -1,3 +1,6 @@
 [submodule "pyVisOS"]
 	path = pyVisOS
 	url = https://github.com/UCLA-Plasma-Simulation-Group/pyVisOS
+[submodule "python-tsung"]
+	path = python-tsung
+	url = https://github.com/tsung1029/python-tsung.git
