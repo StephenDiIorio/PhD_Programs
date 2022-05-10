@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.constants import c, e, epsilon_0, m_e
+from scipy.constants import c, e, epsilon_0, m_e, physical_constants, mega
 
 
 __wp_coeff = c * 100.  # speed of light in [cm / s]
@@ -107,18 +107,61 @@ def pos_osiris_to_si_n0(pos_osiris, n0):
 #################################
 # MOMENTUM CONVERSIONS
 #################################
-def mom_si_to_osiris(mom_si, wp):
-    """
-    """
-    print("Mom conversion not implemented yet.")
-    return
+__p_coeff = m_e * c * 1.e3 * 1.e2  # convert to g cm / s
 
 
-def mom_osiris_to_si(mom_osiris, wp):
+def mom_si_to_osiris(mom_si):
     """
+    Convert momentum to OSIRIS units from SI units normalized to m_e c.
+
+    Parameters
+    ----------
+    mom_si : float
+        The momentum in SI units to convert.
+
+    Returns
+    -------
+    mom_si : numpy.float64
+        Momentum in OSIRIS units.
+
     """
-    print("Mom conversion not implemented yet.")
-    return
+
+    mom_si = np.float64(mom_si) * np.float64(100.) * np.float64(1000.)  # convert to [g cm / s]
+    return mom_si / __p_coeff
+
+
+def mom_osiris_to_si(mom_osiris):
+    """
+    Convert momentum to SI units from OSIRIS units normalized m_e c.
+
+    Parameters
+    ----------
+    pos_osiris : float
+        The momentum in OSIRIS units to convert.
+
+    Returns
+    -------
+    mom_si : numpy.float64
+        Momentum in SI units [kg m / s].
+
+    """
+
+    mom_osiris = np.float64(mom_osiris) / np.float64(100.) / np.float64(1000.) # convert to [kg m / s]
+    return mom_osiris * __p_coeff
+
+
+
+#################################
+# KINETIC ENERGY CONVERSIONS
+#################################
+__ke_coeff = physical_constants["electron mass energy equivalent in MeV"][0] * mega
+
+
+def ke_osiris_to_si(px, py, pz):
+    u2 = np.power(px, 2) + np.power(py, 2) + np.power(pz, 2)
+    gamma = np.sqrt(u2 + 1)
+    kin = u2 / (gamma + 1)
+    return kin * __ke_coeff
 
 
 #################################

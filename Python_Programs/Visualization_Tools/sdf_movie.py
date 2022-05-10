@@ -54,7 +54,7 @@ def get_files(wkdir='Data', base=None):
         flist.remove(base[0])
         flist = base + sorted(flist)
     else:
-        flist = glob.glob(wkdir + "/[0-9]*.sdf")
+        flist = glob.glob(wkdir + "/*.sdf")
         flist = sorted(flist)
 
     # Find the job id
@@ -179,8 +179,6 @@ def plot_figure(filename, varname, vmin=None, vmax=None, figsize=None, ax=None):
 
     if verbose > 1:
         print('Scaling data')
-
-    vdata = vdata
 
     if vmin is None:
         vmin, vmax = get_var_range_from_sdf_files((filename,), varname)

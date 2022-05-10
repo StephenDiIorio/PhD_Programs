@@ -58,7 +58,7 @@ int initmom(double **mom) {
     const double lowerMomTot = 0.6410483775684676;
     const double upperMomTot = 0.8035966691084001;
 
-    const double lowerPy = -0.00242294 * 2.; // init to 5 eV
+    const double lowerPy = -0.00242294 * 2.; // init to 2 eV
     const double upperPy = 0.00242294 * 2.;
     const double lowerPz = 0.0; // -0.00242294;
     const double upperPz = 0.0; // 0.00242294;
